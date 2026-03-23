@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>项目管理 - Redmine Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#bdc2ff",
+              "on-surface-variant": "#c6c5d5",
+              "secondary-container": "#42466e",
+              "secondary": "#c0c3f2",
+              "on-tertiary": "#482900",
+              "on-error": "#690005",
+              "secondary-fixed": "#dfe0ff",
+              "on-secondary-fixed": "#13183d",
+              "tertiary-fixed-dim": "#ffb867",
+              "outline-variant": "#454652",
+              "on-tertiary-fixed-variant": "#673d00",
+              "on-secondary-container": "#b1b5e3",
+              "inverse-primary": "#4854bb",
+              "primary-container": "#5e6ad2",
+              "on-error-container": "#ffdad6",
+              "surface-container-lowest": "#0d0e10",
+              "surface-dim": "#121315",
+              "error-container": "#93000a",
+              "outline": "#908f9e",
+              "on-tertiary-container": "#fffaf8",
+              "surface-container": "#1f2022",
+              "background": "#121315",
+              "surface": "#121315",
+              "primary-fixed": "#dfe0ff",
+              "on-tertiary-fixed": "#2b1700",
+              "inverse-on-surface": "#303033",
+              "tertiary-fixed": "#ffddbb",
+              "error": "#ffb4ab",
+              "surface-container-high": "#292a2c",
+              "on-primary": "#121f8b",
+              "surface-container-highest": "#343537",
+              "on-surface": "#e3e2e4",
+              "tertiary-container": "#a56500",
+              "on-secondary": "#292d53",
+              "surface-container-low": "#1b1c1e",
+              "primary-fixed-dim": "#bdc2ff",
+              "on-primary-fixed-variant": "#2e3aa2",
+              "on-primary-fixed": "#000965",
+              "inverse-surface": "#e3e2e4",
+              "surface-bright": "#38393b",
+              "on-primary-container": "#fdfaff",
+              "surface-tint": "#bdc2ff",
+              "tertiary": "#ffb867",
+              "on-secondary-fixed-variant": "#3f446b",
+              "secondary-fixed-dim": "#c0c3f2",
+              "surface-variant": "#343537",
+              "on-background": "#e3e2e4"
+            },
+            fontFamily: {
+              "headline": ["Inter", "PingFang SC"],
+              "body": ["Inter", "PingFang SC"],
+              "label": ["Inter", "PingFang SC"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 18px;
+        }
+        body {
+            background-color: #121315;
+            color: #e3e2e4;
+            font-family: 'Inter', 'PingFang SC', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #45465233;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-40 bg-[#1B1C1E] h-screen w-64 border-r border-[#45465233] font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight">
+<div class="p-6 flex items-center space-x-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tighter text-[#E3E2E4]">Redmine Pro</h1>
+<p class="text-[10px] text-on-surface-variant/60 uppercase tracking-widest">The Monolith</p>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
+<!-- Navigation Items Mapping -->
+<a class="flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>任务中心</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">history_toggle_off</span>
+<span>工时日志</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>组长看板</span>
+</a>
+<!-- Active State: 项目管理 -->
+<a class="flex items-center space-x-3 px-3 py-2 bg-[#1F2022] text-[#BDC2FF] border-r-2 border-[#5E6AD2] rounded-l-lg" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span>项目管理</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>设置</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-[#45465233]">
+<button class="w-full py-2.5 bg-primary-container text-on-primary-container font-semibold rounded-lg flex items-center justify-center space-x-2 transition-transform scale-95 active:opacity-80">
+<span class="material-symbols-outlined">add</span>
+<span>新任务</span>
+</button>
+<div class="mt-4 flex items-center space-x-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<span>帮助</span>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 left-64 h-14 border-b border-[#45465233] bg-[#121315]/70 backdrop-blur-xl flex justify-between items-center px-6 z-30 font-['Inter'] text-sm">
+<div class="flex items-center space-x-4">
+<span class="text-on-surface-variant">项目目录</span>
+<span class="text-on-surface-variant/30">/</span>
+<span class="font-semibold text-primary">基础架构重构</span>
+</div>
+<div class="flex items-center space-x-6">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-xs">search</span>
+<input class="bg-surface-container-lowest border-none rounded-md pl-9 pr-4 py-1.5 text-xs w-64 focus:ring-1 focus:ring-primary/40 text-on-surface" placeholder="搜索项目或版本..." type="text"/>
+</div>
+<div class="flex items-center space-x-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer">help</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-outline-variant/20 overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="User avatar placeholder profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4jO_UbEOvUwpbDS3bXrdIrrx35DCEhPh0rwqa57v7HwCQoh7p34FSXreDdlUkIoYLcQdJXYzkmYEAC_sMRpcvozV3Ra-KITd7f0JzlnC07sa_iA6ShcQUSKzMOPfhQGlRrKM9Z5_XY7xVU4_phvYUOPXkVMhfu6xI1UG6ggvQVZ8BWmq3FPNux1SMbSBSZYDAGs5bffDQTl9cnHANPO0CEsxQHyvNLp0dfapcEhPToi7IWYF0livPP8do5Z9RxmtLqB7Gx3RUggC9"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="fixed top-14 left-64 right-0 bottom-8 flex overflow-hidden">
+<!-- Section 1: Project Tree Explorer -->
+<section class="w-72 bg-surface-container-low flex flex-col border-r border-[#45465233]">
+<div class="p-4 flex items-center justify-between border-b border-[#45465233]">
+<h2 class="text-[11px] uppercase tracking-widest font-bold text-on-surface-variant">项目层级树</h2>
+<span class="material-symbols-outlined text-xs text-outline cursor-pointer hover:text-primary">filter_alt</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2">
+<div class="space-y-0.5">
+<!-- Root Project -->
+<div class="flex items-center space-x-2 px-2 py-2 bg-surface-container-high rounded-md text-primary font-medium cursor-pointer">
+<span class="material-symbols-outlined text-xs">keyboard_arrow_down</span>
+<span class="material-symbols-outlined text-sm">folder_open</span>
+<span class="truncate">Redmine Pro Monolith</span>
+</div>
+<!-- Nested Items -->
+<div class="pl-6 space-y-0.5 mt-1 border-l border-outline-variant/10 ml-3">
+<div class="flex items-center space-x-2 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container cursor-pointer transition-colors rounded-md text-[13px]">
+<span class="material-symbols-outlined text-xs text-outline">keyboard_arrow_down</span>
+<span class="material-symbols-outlined text-sm text-outline">domain</span>
+<span class="truncate">基础架构</span>
+</div>
+<div class="pl-6 space-y-0.5 border-l border-outline-variant/10 ml-3">
+<div class="flex items-center space-x-2 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container cursor-pointer rounded-md text-[13px]">
+<span class="material-symbols-outlined text-sm text-outline">database</span>
+<span class="truncate">存储优化</span>
+</div>
+<div class="flex items-center space-x-2 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container cursor-pointer rounded-md text-[13px]">
+<span class="material-symbols-outlined text-sm text-outline">security</span>
+<span class="truncate">认证系统</span>
+</div>
+</div>
+<div class="flex items-center space-x-2 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container cursor-pointer rounded-md text-[13px]">
+<span class="material-symbols-outlined text-xs text-outline">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-sm text-outline">brush</span>
+<span class="truncate">前端UI/UX</span>
+</div>
+<div class="flex items-center space-x-2 px-2 py-1.5 text-on-surface-variant hover:bg-surface-container cursor-pointer rounded-md text-[13px]">
+<span class="material-symbols-outlined text-xs text-outline">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-sm text-outline">api</span>
+<span class="truncate">开放平台接口</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4">
+<button class="w-full flex items-center justify-center space-x-2 py-2 border border-outline-variant/30 rounded-lg text-xs text-on-surface-variant hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>创建子项目</span>
+</button>
+</div>
+</section>
+<!-- Section 2 & 3: Main Dashboard -->
+<section class="flex-1 bg-surface overflow-y-auto custom-scrollbar p-6">
+<div class="max-w-6xl mx-auto space-y-8">
+<!-- Header Actions -->
+<div class="flex justify-between items-end">
+<div>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">项目概览</h2>
+<p class="text-sm text-on-surface-variant mt-1">当前项目: 基础架构重构 (Infrastructure Revamp)</p>
+</div>
+<div class="flex space-x-3">
+<button class="px-4 py-2 bg-surface-container-high text-on-surface text-xs font-semibold rounded-lg hover:bg-surface-variant transition-colors flex items-center space-x-2">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span>克隆版本</span>
+</button>
+<button class="px-4 py-2 bg-primary-container text-on-primary-container text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center space-x-2 shadow-lg shadow-primary-container/10">
+<span class="material-symbols-outlined text-sm">create_new_folder</span>
+<span>创建项目</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-5">
+<!-- Versions / Milestones -->
+<div class="col-span-8 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant/80">活动路线图 / 里程碑</h3>
+<a class="text-[11px] text-primary hover:underline" href="#">查看所有版本</a>
+</div>
+<!-- Milestone Card 1 -->
+<div class="bg-surface-container p-5 rounded-xl space-y-4 hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center space-x-3">
+<div class="p-2 bg-secondary-container rounded-lg text-secondary">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">v2.5.0 Stable Release</h4>
+<p class="text-xs text-on-surface-variant">截止日期: 2023-12-30</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-secondary-container/30 text-secondary uppercase">进行中</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>完成进度: 74%</span>
+<span>48 / 65 任务已关闭</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-primary-container w-[74%] rounded-full"></div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 pt-2">
+<div class="text-center p-2 rounded bg-surface-container-lowest/50">
+<p class="text-[10px] text-on-surface-variant uppercase">待处理</p>
+<p class="text-lg font-bold text-on-surface">12</p>
+</div>
+<div class="text-center p-2 rounded bg-surface-container-lowest/50">
+<p class="text-[10px] text-on-surface-variant uppercase">修复中</p>
+<p class="text-lg font-bold text-secondary">5</p>
+</div>
+<div class="text-center p-2 rounded bg-surface-container-lowest/50">
+<p class="text-[10px] text-on-surface-variant uppercase">延期</p>
+<p class="text-lg font-bold text-error">0</p>
+</div>
+</div>
+</div>
+<!-- Milestone Card 2 -->
+<div class="bg-surface-container p-5 rounded-xl space-y-4 hover:bg-surface-container-high transition-colors">
+<div class="flex justify-between items-start">
+<div class="flex items-center space-x-3">
+<div class="p-2 bg-surface-container-highest rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined">architecture</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Q1 技术债务清理</h4>
+<p class="text-xs text-on-surface-variant">截止日期: 2024-03-15</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-surface-container-highest text-on-surface-variant uppercase">待启动</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[11px] text-on-surface-variant">
+<span>完成进度: 0%</span>
+<span>0 / 120 任务已关闭</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[0%] rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar Stats & Audits -->
+<div class="col-span-4 space-y-6">
+<!-- Member Stats Card -->
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-xl overflow-hidden">
+<div class="p-4 bg-surface-container flex items-center justify-between">
+<h3 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">项目成员 (14)</h3>
+<span class="material-symbols-outlined text-sm text-outline cursor-pointer">group_add</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<img alt="Member" class="w-6 h-6 rounded-full border border-outline-variant/30" data-alt="Team member profile picture small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTN_sEC7tRJ6zOxu6nAJJIDFUsfIXVI_yNxszI0-JPNEDf6BR6otxvZrleWuANY0J99NDuYHQgv4qdbBszF2JwhhXPqFZqwjDG-M_bcei_2aqo38CXEyqw7GjCf6d7705KVMhIW7scivxadOQ1B3fpDAgBxIg-oWRn7gP-jjXdq-vgiHumAq07BXCdtp1qDRqjzCEbSNy5ZKUJlFDRIJImp0AGkcB1BSS5utcmvDB9wbk1f7HHkjhBQfISQ6nNu_kNYe2KtRGeImIA"/>
+<span class="text-xs font-medium text-on-surface">张伟 (Manager)</span>
+</div>
+<span class="material-symbols-outlined text-xs text-outline opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">more_vert</span>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<img alt="Member" class="w-6 h-6 rounded-full border border-outline-variant/30" data-alt="Team member profile picture small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsPEn4GrIJtPiBSCS_DmiKl93NPANDCZIxR_Mt7VHNEnoGDKlYIo5dP3u6m9LgpQ-rbhf2osCOuDtfcocU8trrokGiYgFye3ATPOMIJ_8vX5-7K3PL4IB3lVnYrz6bNVvLZ6WLaoHIsOhgrKng9vYs1bdiodUziaxOzYoi-z8PE5NKdaVMwEQvWVpAZuzZVLR99ttBrbx5pdcSelmCScD5xOeW08GETPUqSRvMc0pusp0IJ9nLsel-GQkMGlA4awYSeCzmOezk3nnS"/>
+<span class="text-xs font-medium text-on-surface">李娜 (Developer)</span>
+</div>
+<span class="material-symbols-outlined text-xs text-outline opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">more_vert</span>
+</div>
+<div class="flex items-center justify-between group">
+<div class="flex items-center space-x-3">
+<img alt="Member" class="w-6 h-6 rounded-full border border-outline-variant/30" data-alt="Team member profile picture small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCytxi6Da2pC8D3nQBtMfLLej4HbCbJL0jcGdH1HLf8D8p5EVMG45WnrlDr43U2cRXZV3Yez0ZUQjUjV8ALydZjk74vwL6Gerb8Pj2M0dfBNA00jNqtULh46h7cgxMvx93qHkI-tbdMzjqD7c3MAQ_rK7zVKiEnqca52UoNQQhAlYv7U_cPGDolZrjT4UE-mkYQ9Ls4j8QTVKuTFKbiYe1tTBQUijie0ruEcmSSdAxYqeyThMEZmbMjeBl6tbO3c2GxZSrUNuual-r6"/>
+<span class="text-xs font-medium text-on-surface">王杰 (Designer)</span>
+</div>
+<span class="material-symbols-outlined text-xs text-outline opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">more_vert</span>
+</div>
+<button class="w-full mt-2 text-[10px] text-primary/70 hover:text-primary transition-colors text-center uppercase tracking-wider font-bold">查看所有 14 名成员</button>
+</div>
+</div>
+<!-- Permission Audit Card -->
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-xl overflow-hidden">
+<div class="p-4 bg-surface-container flex items-center justify-between">
+<h3 class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant">权限审计</h3>
+<span class="material-symbols-outlined text-sm text-outline">verified_user</span>
+</div>
+<div class="p-4 space-y-4">
+<div class="flex items-start space-x-3">
+<div class="mt-0.5 text-secondary">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+</div>
+<div>
+<p class="text-[11px] font-medium text-on-surface">外部访问控制</p>
+<p class="text-[10px] text-on-surface-variant">已限制: 仅 VPN 受信任范围</p>
+</div>
+</div>
+<div class="flex items-start space-x-3">
+<div class="mt-0.5 text-tertiary">
+<span class="material-symbols-outlined text-sm">warning</span>
+</div>
+<div>
+<p class="text-[11px] font-medium text-on-surface">敏感操作日志</p>
+<p class="text-[10px] text-on-surface-variant">发现 3 例未经授权的 API 调用</p>
+</div>
+</div>
+<div class="pt-2">
+<div class="h-24 w-full bg-surface-container-lowest rounded-lg relative overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent"></div>
+<div class="z-10 text-center">
+<p class="text-lg font-bold text-primary">A+</p>
+<p class="text-[9px] uppercase tracking-tighter text-on-surface-variant">安全合规评分</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Shell -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 border-t border-[#45465233] bg-[#0D0E10] flex justify-between items-center px-4 font-mono text-[10px] uppercase tracking-widest z-30">
+<div class="flex items-center space-x-4">
+<span class="text-[#454652]">v2.4.0-stable | Connected to redmine.internal</span>
+<div class="flex items-center space-x-1">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+<span class="text-green-500/80">System Online</span>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<span class="text-[#BDC2FF] flex items-center space-x-2">
+<span class="material-symbols-outlined text-[10px]">timer</span>
+<span>Active Task: #4029 - 00:12:45</span>
+</span>
+<span class="text-[#454652] hover:text-[#E3E2E4] cursor-pointer">Logs</span>
+<span class="text-[#454652] hover:text-[#E3E2E4] cursor-pointer">API Status</span>
+</div>
+</footer>
+</body></html>

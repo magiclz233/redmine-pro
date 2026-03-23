@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Redmine Pro | 研发组长管理舱</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bdc2ff",
+              "surface-container-low": "#1b1c1e",
+              "surface-container-high": "#292a2c",
+              "on-tertiary-fixed": "#2b1700",
+              "on-primary": "#121f8b",
+              "on-secondary-fixed": "#13183d",
+              "on-secondary-fixed-variant": "#3f446b",
+              "inverse-primary": "#4854bb",
+              "surface-bright": "#38393b",
+              "on-secondary-container": "#b1b5e3",
+              "outline": "#908f9e",
+              "on-primary-fixed-variant": "#2e3aa2",
+              "surface-container": "#1f2022",
+              "primary-container": "#5e6ad2",
+              "surface-container-lowest": "#0d0e10",
+              "on-error-container": "#ffdad6",
+              "primary": "#bdc2ff",
+              "secondary-fixed-dim": "#c0c3f2",
+              "primary-fixed": "#dfe0ff",
+              "outline-variant": "#454652",
+              "tertiary-fixed": "#ffddbb",
+              "inverse-on-surface": "#303033",
+              "secondary-container": "#42466e",
+              "on-secondary": "#292d53",
+              "on-primary-container": "#fdfaff",
+              "surface-container-highest": "#343537",
+              "tertiary-fixed-dim": "#ffb867",
+              "tertiary": "#ffb867",
+              "on-tertiary": "#482900",
+              "on-primary-fixed": "#000965",
+              "on-tertiary-fixed-variant": "#673d00",
+              "tertiary-container": "#a56500",
+              "on-tertiary-container": "#fffaf8",
+              "error": "#ffb4ab",
+              "on-surface-variant": "#c6c5d5",
+              "background": "#121315",
+              "surface": "#121315",
+              "surface-tint": "#bdc2ff",
+              "error-container": "#93000a",
+              "surface-dim": "#121315",
+              "on-error": "#690005",
+              "on-surface": "#e3e2e4",
+              "surface-variant": "#343537",
+              "secondary-fixed": "#dfe0ff",
+              "secondary": "#c0c3f2",
+              "inverse-surface": "#e3e2e4",
+              "on-background": "#e3e2e4"
+            },
+            fontFamily: {
+              "headline": ["Inter", "PingFang SC"],
+              "body": ["Inter", "PingFang SC"],
+              "label": ["Inter", "PingFang SC"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', sans-serif; background-color: #121315; color: #e3e2e4; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(31, 32, 34, 0.7); backdrop-filter: blur(20px); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0d0e10; }
+        ::-webkit-scrollbar-thumb { background: #45465233; border-radius: 2px; }
+        .heatmap-cell { width: 14px; height: 14px; border-radius: 2px; }
+    </style>
+</head>
+<body class="antialiased overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-40 h-screen w-64 bg-[#1B1C1E] border-r border-[#45465233]">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-xl">monorail</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tighter text-[#E3E2E4]">Redmine Pro</h1>
+<p class="text-[10px] font-medium tracking-tight text-on-surface-variant opacity-60">The Monolith</p>
+</div>
+</div>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full py-2.5 px-4 rounded-lg bg-primary-container text-on-primary-container flex items-center gap-2 font-medium transition-transform active:scale-95">
+<span class="material-symbols-outlined text-lg">add</span>
+<span class="text-xs">新任务</span>
+</button>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight bg-[#1F2022] text-[#BDC2FF] border-r-2 border-[#5E6AD2]" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>组长看板</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>任务中心</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">history_toggle_off</span>
+<span>工时日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span>项目管理</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>设置</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-[#45465233]">
+<a class="flex items-center gap-3 px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>帮助</span>
+</a>
+<div class="mt-4 flex items-center gap-3 px-3">
+<img alt="User Avatar" class="w-8 h-8 rounded-full bg-surface-container-high" data-alt="User profile avatar icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYZZ250fUQUiVhIsAfQTRCyRzi4_9jzEtY9R3ubJZ_eRl6l3-FoV3gf2vQs607FSr9bDaoQ3JF5viKqCkV1lBiwBLFXaOpEOislC5--zjwL4edZhYq-ZX8UCgkXHBpiWctEJS9srZRAuxtfDEYSVyndrtNLCqbauTXTp7DMvV7WmJWB3aUgkR1BHSGriN38uRyO6WOm2EiYYiWWhlIcVl1Nb936hy6IlExdGiIQ4OcvfIofSPUe-qITeBtr9NB-LjqW8ae2oRrEquN"/>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-semibold truncate text-[#E3E2E4]">Admin.Zhang</p>
+<p class="text-[10px] text-on-surface-variant truncate">研发二组 负责人</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-64 flex justify-between items-center px-6 z-30 w-full h-14 border-b border-[#45465233] bg-[#121315]/70 backdrop-blur-xl">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-lowest border-none rounded-md pl-10 pr-4 py-1.5 text-sm text-on-surface placeholder:text-outline-variant focus:ring-1 focus:ring-primary/40" placeholder="搜索版本、迭代或任务 ID..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container-high text-[10px] text-on-surface-variant border border-outline-variant/30">⌘</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container-high text-[10px] text-on-surface-variant border border-outline-variant/30">K</kbd>
+</div>
+</div>
+<div class="h-4 w-px bg-outline-variant/30 mx-2"></div>
+<div class="flex items-center gap-2 cursor-pointer group">
+<span class="text-xs font-semibold text-primary">v2.4.0-Stable_Alpha</span>
+<span class="material-symbols-outlined text-xs text-on-surface-variant group-hover:text-primary transition-colors">keyboard_arrow_down</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="relative p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-[#121315]"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-xl">help</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="fixed inset-0 left-64 top-14 bottom-8 overflow-y-auto p-6 bg-[#121315]">
+<!-- Page Header -->
+<div class="flex items-end justify-between mb-8">
+<div>
+<nav class="flex text-[10px] text-on-surface-variant mb-1 gap-2 uppercase tracking-widest">
+<span>Dashboards</span>
+<span>/</span>
+<span class="text-primary">Leader Dashboard</span>
+</nav>
+<h2 class="text-2xl font-bold tracking-tight text-on-surface">研发组长管理舱</h2>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 rounded bg-surface-container text-xs font-medium text-on-surface-variant border border-outline-variant/10 hover:bg-surface-container-high">导出报告</button>
+<button class="px-3 py-1.5 rounded bg-primary-container text-xs font-medium text-on-primary-container">刷新数据</button>
+</div>
+</div>
+<!-- Metric Bento Grid -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">Bug 逃逸率</span>
+<span class="text-error text-[10px] font-mono">+2.4%</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-mono">1.24%</span>
+<span class="text-[10px] text-on-surface-variant">目标 &lt; 1.0%</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-error w-3/4"></div>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">任务重开率</span>
+<span class="text-primary text-[10px] font-mono">-1.2%</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-mono">4.8%</span>
+<span class="text-[10px] text-on-surface-variant">优于平均</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/3"></div>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">平均解决时间 (MTTR)</span>
+<span class="text-on-surface-variant text-[10px] font-mono">稳定</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-mono">3.2<span class="text-sm font-normal ml-1">h</span></span>
+<span class="text-[10px] text-on-surface-variant">P90 覆盖</span>
+</div>
+<div class="mt-4 flex gap-1 items-end h-4">
+<div class="w-1.5 h-2 bg-primary/40 rounded-t-sm"></div>
+<div class="w-1.5 h-3 bg-primary/40 rounded-t-sm"></div>
+<div class="w-1.5 h-4 bg-primary rounded-t-sm"></div>
+<div class="w-1.5 h-2 bg-primary/40 rounded-t-sm"></div>
+<div class="w-1.5 h-3 bg-primary/40 rounded-t-sm"></div>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-semibold">代码质量评分</span>
+<span class="text-tertiary text-[10px] font-mono">A-</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-bold font-mono">92.4</span>
+<span class="text-[10px] text-on-surface-variant">SonarQube</span>
+</div>
+<div class="mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-tertiary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[12px] text-outline-variant">star</span>
+</div>
+</div>
+</div>
+<!-- Middle Row: Charts -->
+<div class="grid grid-cols-12 gap-6 mb-6">
+<!-- Heatmap -->
+<div class="col-span-4 p-5 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xs font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">view_comfy</span>
+                        人员饱和度热图
+                    </h3>
+<span class="text-[10px] text-on-surface-variant">过去 14 天</span>
+</div>
+<div class="grid grid-cols-14 gap-1.5">
+<!-- Placeholder Heatmap Cells -->
+<div class="heatmap-cell bg-surface-container-lowest"></div>
+<div class="heatmap-cell bg-primary/20"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary/80"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary/20"></div>
+<div class="heatmap-cell bg-surface-container-lowest"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/80"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<!-- Repeat for more rows -->
+<div class="heatmap-cell bg-primary/20"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/80"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/20"></div>
+<div class="heatmap-cell bg-surface-container-lowest"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/60"></div>
+<div class="heatmap-cell bg-primary/80"></div>
+<div class="heatmap-cell bg-primary"></div>
+<div class="heatmap-cell bg-primary/40"></div>
+<div class="heatmap-cell bg-primary/20"></div>
+</div>
+<div class="mt-6 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="text-[10px] text-on-surface-variant">空闲</span>
+<div class="flex gap-1">
+<div class="w-2 h-2 bg-surface-container-lowest rounded-sm border border-outline-variant/20"></div>
+<div class="w-2 h-2 bg-primary/40 rounded-sm"></div>
+<div class="w-2 h-2 bg-primary rounded-sm"></div>
+</div>
+<span class="text-[10px] text-on-surface-variant">饱和</span>
+</div>
+<button class="text-[10px] text-primary hover:underline">查看资源分配</button>
+</div>
+</div>
+<!-- Task Analysis Ring -->
+<div class="col-span-4 p-5 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xs font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">donut_large</span>
+                        任务占比分析
+                    </h3>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative w-28 h-28 flex items-center justify-center">
+<!-- Simulated Ring Chart using SVG -->
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<circle class="stroke-surface-container-lowest" cx="18" cy="18" fill="none" r="16" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#5E6AD2" stroke-dasharray="40 100" stroke-linecap="round" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#FFB867" stroke-dasharray="25 100" stroke-dashoffset="-40" stroke-linecap="round" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="none" r="16" stroke="#FFDAD6" stroke-dasharray="15 100" stroke-dashoffset="-65" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-lg font-mono font-bold">142</span>
+<span class="text-[8px] text-on-surface-variant uppercase">Tasks</span>
+</div>
+</div>
+<div class="flex-1 space-y-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="text-[10px]">功能开发</span>
+</div>
+<span class="text-[10px] font-mono">40%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="text-[10px]">BUG 修复</span>
+</div>
+<span class="text-[10px] font-mono">25%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-on-error-container"></span>
+<span class="text-[10px]">性能优化</span>
+</div>
+<span class="text-[10px] font-mono">15%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="text-[10px]">设计 &amp; 测试</span>
+</div>
+<span class="text-[10px] font-mono">20%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Man-hour Comparison Bar -->
+<div class="col-span-4 p-5 rounded-xl bg-surface-container border border-outline-variant/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-xs font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">bar_chart</span>
+                        工时预测对比
+                    </h3>
+</div>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between text-[10px] mb-1.5">
+<span class="text-on-surface-variant">本周预期工时</span>
+<span class="font-mono">420h</span>
+</div>
+<div class="h-2 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary-container opacity-40 w-[85%]"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[10px] mb-1.5">
+<span class="text-on-surface-variant">本周实际工时</span>
+<span class="font-mono text-primary">384h</span>
+</div>
+<div class="h-2 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[78%]"></div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between border-t border-outline-variant/10">
+<span class="text-[10px] text-on-surface-variant">偏差率</span>
+<span class="text-xs font-mono font-bold text-tertiary">-8.5%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Monitoring List -->
+<div class="rounded-xl bg-surface-container border border-outline-variant/5 overflow-hidden">
+<div class="px-5 py-4 border-b border-outline-variant/10 flex justify-between items-center">
+<h3 class="text-xs font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-error">warning</span>
+                    严重 &amp; 停滞 Bug 监控
+                </h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5 text-[10px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span>严重</span>
+</div>
+<div class="flex items-center gap-1.5 text-[10px] text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>停滞 &gt; 3天</span>
+</div>
+</div>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Item 1 -->
+<div class="px-5 py-3 hover:bg-surface-container-high transition-colors flex items-center gap-4">
+<span class="text-xs font-mono text-on-surface-variant">#4029</span>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-on-error-container text-[8px] font-bold">BLOCKER</span>
+<p class="text-xs font-medium text-on-surface">生产环境核心支付链路偶发性 500 报错</p>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-on-surface-variant">
+<span>负责人: <span class="text-on-surface">Li.Hua</span></span>
+<span>更新时间: 2小时前</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant mb-1">停留时长</p>
+<p class="text-xs font-mono font-bold text-error">4d 12h</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="px-5 py-3 hover:bg-surface-container-high transition-colors flex items-center gap-4">
+<span class="text-xs font-mono text-on-surface-variant">#3982</span>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-container text-[8px] font-bold">URGENT</span>
+<p class="text-xs font-medium text-on-surface">移动端版本更新后，无法加载用户历史账单数据</p>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-on-surface-variant">
+<span>负责人: <span class="text-on-surface">Zhang.San</span></span>
+<span>更新时间: 5小时前</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant mb-1">停留时长</p>
+<p class="text-xs font-mono font-bold text-tertiary">2d 08h</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="px-5 py-3 hover:bg-surface-container-high transition-colors flex items-center gap-4">
+<span class="text-xs font-mono text-on-surface-variant">#4110</span>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-on-error-container text-[8px] font-bold">CRITICAL</span>
+<p class="text-xs font-medium text-on-surface">后台导表功能在数据量超过 10w 时发生 OOM</p>
+</div>
+<div class="flex items-center gap-3 text-[10px] text-on-surface-variant">
+<span>负责人: <span class="text-on-surface">Wang.Wu</span></span>
+<span>更新时间: 10分钟前</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant mb-1">停留时长</p>
+<p class="text-xs font-mono font-bold text-on-surface">0d 04h</p>
+</div>
+</div>
+</div>
+<div class="px-5 py-3 bg-surface-container-low/50 flex justify-center">
+<button class="text-[10px] font-bold text-primary flex items-center gap-1 group">
+                    查看全部异常任务
+                    <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer Status Bar -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 border-t border-[#45465233] bg-[#0D0E10] flex justify-between items-center px-4">
+<div class="flex items-center gap-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-[#454652]">v2.4.0-stable | Connected to redmine.internal</span>
+<div class="h-3 w-px bg-outline-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-mono text-[10px] text-[#BDC2FF]">Syncing data...</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<a class="font-mono text-[10px] uppercase tracking-widest text-[#BDC2FF] hover:text-[#E3E2E4] transition-colors" href="#">Active Task: #4029 - 00:12:45</a>
+<div class="flex items-center gap-1 font-mono text-[10px] text-[#454652]">
+<span class="material-symbols-outlined text-[12px]">database</span>
+<span>Latency: 24ms</span>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#bdc2ff",
+              "on-surface-variant": "#c6c5d5",
+              "secondary-container": "#42466e",
+              "secondary": "#c0c3f2",
+              "on-tertiary": "#482900",
+              "on-error": "#690005",
+              "secondary-fixed": "#dfe0ff",
+              "on-secondary-fixed": "#13183d",
+              "tertiary-fixed-dim": "#ffb867",
+              "outline-variant": "#454652",
+              "on-tertiary-fixed-variant": "#673d00",
+              "on-secondary-container": "#b1b5e3",
+              "inverse-primary": "#4854bb",
+              "primary-container": "#5e6ad2",
+              "on-error-container": "#ffdad6",
+              "surface-container-lowest": "#0d0e10",
+              "surface-dim": "#121315",
+              "error-container": "#93000a",
+              "outline": "#908f9e",
+              "on-tertiary-container": "#fffaf8",
+              "surface-container": "#1f2022",
+              "background": "#121315",
+              "surface": "#121315",
+              "primary-fixed": "#dfe0ff",
+              "on-tertiary-fixed": "#2b1700",
+              "inverse-on-surface": "#303033",
+              "tertiary-fixed": "#ffddbb",
+              "error": "#ffb4ab",
+              "surface-container-high": "#292a2c",
+              "on-primary": "#121f8b",
+              "surface-container-highest": "#343537",
+              "on-surface": "#e3e2e4",
+              "tertiary-container": "#a56500",
+              "on-secondary": "#292d53",
+              "surface-container-low": "#1b1c1e",
+              "primary-fixed-dim": "#bdc2ff",
+              "on-primary-fixed-variant": "#2e3aa2",
+              "on-primary-fixed": "#000965",
+              "inverse-surface": "#e3e2e4",
+              "surface-bright": "#38393b",
+              "on-primary-container": "#fdfaff",
+              "surface-tint": "#bdc2ff",
+              "tertiary": "#ffb867",
+              "on-secondary-fixed-variant": "#3f446b",
+              "secondary-fixed-dim": "#c0c3f2",
+              "surface-variant": "#343537",
+              "on-background": "#e3e2e4"
+            },
+            fontFamily: {
+              "headline": ["Inter", "PingFang SC"],
+              "body": ["Inter", "PingFang SC"],
+              "label": ["Inter", "PingFang SC"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #121315; color: #e3e2e4; font-family: 'Inter', 'PingFang SC', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(52, 53, 55, 0.7); backdrop-filter: blur(20px); }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0d0e10; }
+        ::-webkit-scrollbar-thumb { background: #454652; border-radius: 10px; }
+    </style>
+</head>
+<body class="overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-40 bg-[#1B1C1E] w-64 border-r border-[#45465233]">
+<div class="p-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-lg">account_tree</span>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tighter text-[#E3E2E4]">Redmine Pro</h1>
+<p class="font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#BDC2FF]">The Monolith</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg">assignment</span>
+<span>任务中心</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg">history_toggle_off</span>
+<span>工时日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg">analytics</span>
+<span>组长看板</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+<span>项目管理</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight bg-[#1F2022] text-[#BDC2FF] border-r-2 border-[#5E6AD2] rounded-l-lg" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span>设置</span>
+</a>
+</nav>
+<div class="p-4 mt-auto space-y-4">
+<button class="w-full py-2 bg-primary-container text-on-primary-container text-xs font-bold rounded-lg scale-95 active:opacity-80 transition-transform">
+                新任务
+            </button>
+<div class="flex items-center gap-3 px-3 py-2 font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-lg">help</span>
+<span>帮助</span>
+</div>
+</div>
+</aside>
+<!-- TopNavBar (Shared Component) -->
+<header class="fixed top-0 right-0 left-64 h-14 border-b border-[#45465233] bg-[#121315]/70 backdrop-blur-xl flex justify-between items-center px-6 z-30">
+<div class="flex items-center gap-4">
+<h2 class="text-[#E3E2E4] font-semibold text-sm">应用设置</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center bg-surface-container-lowest px-3 py-1.5 rounded-lg border border-outline-variant/20">
+<span class="material-symbols-outlined text-sm text-outline mr-2">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 text-on-surface w-48 p-0" placeholder="搜索设置..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer transition-colors">help</span>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant/30" data-alt="User profile avatar with professional look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdi8YjbEVKA6dNHGk9q9VTVLwq0N13npKXolIkHDd3iX2xKN-Qdhbxj69rU_4QN8Hz6hZn3lPA7drywFq8zQADrm7luegWuN8pQJ7GmdsAj0t2Lueqssy9oxwMQWJaPwrF3PIOw5rXZZpjLMtz7ZnBoix31yZZ7LnS2CUkum_77NnoCGREyidl95J6Km7Koexn30WfMWS_UTYqK4BA6l1woHBSR0rhtadkCGblJ9BbOnNO1r_9nOQ9LzhUOYHluWbzyMMtdYAU8bjb"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="fixed inset-0 left-64 top-14 bottom-8 overflow-y-auto bg-surface-dim p-8">
+<div class="max-w-5xl mx-auto grid grid-cols-12 gap-8">
+<!-- Settings Category Navigation (Sub-tabs) -->
+<aside class="col-span-3 space-y-1">
+<h3 class="text-[10px] uppercase tracking-widest text-outline-variant mb-4 px-3">常规设置</h3>
+<button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm bg-surface-container text-primary font-medium">
+<span class="material-symbols-outlined text-lg">link</span>
+<span>账户连接</span>
+</button>
+<button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">palette</span>
+<span>外观界面</span>
+</button>
+<button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">terminal</span>
+<span>系统参数</span>
+</button>
+<button class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">notifications_active</span>
+<span>通知推送</span>
+</button>
+</aside>
+<!-- Settings Detail Content -->
+<div class="col-span-9 space-y-8 pb-12">
+<!-- Section 1: Account Connectivity -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-lg font-bold text-on-surface">账户连接 (Account Connectivity)</h2>
+<span class="text-[10px] bg-secondary-container/30 text-secondary px-2 py-0.5 rounded border border-secondary/20">已连接</span>
+</div>
+<div class="p-6 rounded-xl bg-surface-container border border-outline-variant/10 space-y-6">
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant">Redmine 实例 URL</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:border-primary/40 focus:ring-0 transition-all" type="text" value="https://redmine.internal.company.com"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-outline text-sm">lock</span>
+</div>
+<p class="text-[10px] text-outline">这是您团队的主服务器地址</p>
+</div>
+<div class="space-y-2">
+<label class="text-xs font-medium text-on-surface-variant">REST API 密钥</label>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<input class="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:border-primary/40 focus:ring-0 transition-all font-mono" type="password" value="••••••••••••••••••••••••••••••••"/>
+<button class="absolute right-3 top-2.5">
+<span class="material-symbols-outlined text-outline text-sm">visibility</span>
+</button>
+</div>
+<button class="px-4 py-2 bg-surface-container-high border border-outline-variant/30 rounded-lg text-xs font-medium hover:bg-surface-variant transition-colors">
+                                    验证连接
+                                </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Appearance -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold text-on-surface">外观界面 (Appearance)</h2>
+<div class="grid grid-cols-3 gap-4">
+<div class="p-4 rounded-xl bg-surface-container-high border-2 border-primary ring-1 ring-primary/20 flex flex-col items-center gap-3 cursor-pointer">
+<div class="w-full aspect-video rounded bg-surface-container-lowest border border-outline-variant/30 overflow-hidden flex flex-col">
+<div class="h-2 bg-surface-container-highest w-full"></div>
+<div class="flex-1 p-2 space-y-1">
+<div class="h-1 bg-outline-variant/40 w-full rounded"></div>
+<div class="h-1 bg-outline-variant/40 w-3/4 rounded"></div>
+</div>
+</div>
+<span class="text-xs font-semibold text-primary">深色模式 (Graphite)</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/10 flex flex-col items-center gap-3 cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="w-full aspect-video rounded bg-white border border-slate-200 overflow-hidden flex flex-col">
+<div class="h-2 bg-slate-100 w-full"></div>
+<div class="flex-1 p-2 space-y-1">
+<div class="h-1 bg-slate-200 w-full rounded"></div>
+<div class="h-1 bg-slate-200 w-3/4 rounded"></div>
+</div>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">浅色模式</span>
+</div>
+<div class="p-4 rounded-xl bg-surface-container border border-outline-variant/10 flex flex-col items-center gap-3 cursor-pointer hover:bg-surface-container-high transition-all">
+<div class="w-full aspect-video rounded bg-surface-container-lowest border border-outline-variant/30 overflow-hidden flex relative">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest via-white/10 to-white/20"></div>
+<div class="h-full w-1/2 bg-surface-container-lowest border-r border-outline-variant/20"></div>
+<div class="h-full w-1/2 bg-white"></div>
+</div>
+<span class="text-xs font-medium text-on-surface-variant">跟随系统</span>
+</div>
+</div>
+</section>
+<!-- Section 3: System -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold text-on-surface">系统参数 (System)</h2>
+<div class="p-6 rounded-xl bg-surface-container border border-outline-variant/10 divide-y divide-outline-variant/10">
+<div class="pb-6 flex items-center justify-between">
+<div class="space-y-1">
+<p class="text-sm font-medium text-on-surface">离线缓存限制</p>
+<p class="text-xs text-outline">允许应用在本地存储的数据量 (用于离线工作)</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-mono text-primary">512 MB</span>
+<input class="w-32 accent-primary" type="range"/>
+</div>
+</div>
+<div class="pt-6 flex items-center justify-between">
+<div class="space-y-1">
+<p class="text-sm font-medium text-on-surface">清除本地数据</p>
+<p class="text-xs text-outline">立即删除所有本地缓存并重新同步 (不影响服务器数据)</p>
+</div>
+<button class="px-4 py-2 bg-error-container/20 border border-error/20 text-error text-xs font-medium rounded-lg hover:bg-error-container/30 transition-colors">
+                                立即清除
+                            </button>
+</div>
+</div>
+</section>
+<!-- Section 4: Notifications -->
+<section class="space-y-4">
+<h2 class="text-lg font-bold text-on-surface">通知推送 (Notifications)</h2>
+<div class="p-6 rounded-xl bg-surface-container border border-outline-variant/10 space-y-6">
+<div class="flex items-center justify-between">
+<div class="space-y-1">
+<p class="text-sm font-medium text-on-surface">桌面原生弹窗通知</p>
+<p class="text-xs text-outline">当有新的指派或状态变更时在系统通知栏提醒</p>
+</div>
+<div class="w-10 h-5 bg-primary-container rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-4 h-4 bg-on-primary-container rounded-full shadow-sm"></div>
+</div>
+</div>
+<div class="flex items-center justify-between opacity-50">
+<div class="space-y-1">
+<p class="text-sm font-medium text-on-surface">声音提醒</p>
+<p class="text-xs text-outline">收到重要更新时播放提示音</p>
+</div>
+<div class="w-10 h-5 bg-surface-container-highest rounded-full relative cursor-pointer">
+<div class="absolute left-0.5 top-0.5 w-4 h-4 bg-outline rounded-full shadow-sm"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Actions Footer -->
+<div class="flex items-center justify-end gap-3 pt-6 border-t border-outline-variant/10">
+<button class="px-6 py-2.5 text-sm font-medium text-on-surface-variant hover:text-on-surface transition-colors">取消</button>
+<button class="px-8 py-2.5 text-sm font-bold bg-primary-container text-on-primary-container rounded-lg shadow-lg shadow-primary/10 hover:brightness-110 active:scale-95 transition-all">保存更改</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 border-t border-[#45465233] bg-[#0D0E10] flex justify-between items-center px-4 z-30">
+<div class="font-mono text-[10px] uppercase tracking-widest text-[#454652]">
+            v2.4.0-stable | Connected to redmine.internal
+        </div>
+<div class="flex items-center gap-4">
+<span class="font-mono text-[10px] uppercase tracking-widest text-[#BDC2FF]">Active Task: #4029 - 00:12:45</span>
+<div class="flex items-center gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+<span class="font-mono text-[10px] uppercase tracking-widest text-[#5E6AD2]">System Online</span>
+</div>
+</div>
+</footer>
+</body></html>

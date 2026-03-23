@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Redmine Pro | 极致任务中心</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bdc2ff",
+              "surface-container-low": "#1b1c1e",
+              "surface-container-high": "#292a2c",
+              "on-tertiary-fixed": "#2b1700",
+              "on-primary": "#121f8b",
+              "on-secondary-fixed": "#13183d",
+              "on-secondary-fixed-variant": "#3f446b",
+              "inverse-primary": "#4854bb",
+              "surface-bright": "#38393b",
+              "on-secondary-container": "#b1b5e3",
+              "outline": "#908f9e",
+              "on-primary-fixed-variant": "#2e3aa2",
+              "surface-container": "#1f2022",
+              "primary-container": "#5e6ad2",
+              "surface-container-lowest": "#0d0e10",
+              "on-error-container": "#ffdad6",
+              "primary": "#bdc2ff",
+              "secondary-fixed-dim": "#c0c3f2",
+              "primary-fixed": "#dfe0ff",
+              "outline-variant": "#454652",
+              "tertiary-fixed": "#ffddbb",
+              "inverse-on-surface": "#303033",
+              "secondary-container": "#42466e",
+              "on-secondary": "#292d53",
+              "on-primary-container": "#fdfaff",
+              "surface-container-highest": "#343537",
+              "tertiary-fixed-dim": "#ffb867",
+              "tertiary": "#ffb867",
+              "on-tertiary": "#482900",
+              "on-primary-fixed": "#000965",
+              "on-tertiary-fixed-variant": "#673d00",
+              "tertiary-container": "#a56500",
+              "on-tertiary-container": "#fffaf8",
+              "error": "#ffb4ab",
+              "on-surface-variant": "#c6c5d5",
+              "background": "#121315",
+              "surface": "#121315",
+              "surface-tint": "#bdc2ff",
+              "error-container": "#93000a",
+              "surface-dim": "#121315",
+              "on-error": "#690005",
+              "on-surface": "#e3e2e4",
+              "surface-variant": "#343537",
+              "secondary-fixed": "#dfe0ff",
+              "secondary": "#c0c3f2",
+              "inverse-surface": "#e3e2e4",
+              "on-background": "#e3e2e4"
+            },
+            fontFamily: {
+              "headline": ["Inter", "PingFang SC"],
+              "body": ["Inter", "PingFang SC"],
+              "label": ["Inter", "PingFang SC"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        font-size: 20px;
+        vertical-align: middle;
+      }
+      body {
+        background-color: #121315;
+        color: #e3e2e4;
+        font-family: 'Inter', 'PingFang SC', sans-serif;
+        overflow: hidden;
+      }
+      .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+      .custom-scrollbar::-webkit-scrollbar-thumb { background: #45465233; border-radius: 10px; }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #454652; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col z-40 h-screen w-64 bg-[#1B1C1E] border-r border-[#45465233] font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#bdc2ff] to-[#5e6ad2] flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">layers</span>
+</div>
+<div class="flex flex-col">
+<span class="text-lg font-bold tracking-tighter text-[#E3E2E4]">Redmine Pro</span>
+<span class="text-[10px] text-on-surface-variant opacity-60">The Monolith</span>
+</div>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full py-2.5 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center gap-2 scale-95 active:opacity-80 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+<span class="text-sm font-semibold">新任务</span>
+</button>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span>工作台</span>
+</div>
+<div class="flex items-center px-3 py-2 bg-[#1F2022] text-[#BDC2FF] border-r-2 border-[#5E6AD2] rounded-l-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">assignment</span>
+<span>任务中心</span>
+</div>
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">history_toggle_off</span>
+<span>工时日志</span>
+</div>
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">analytics</span>
+<span>组长看板</span>
+</div>
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">account_tree</span>
+<span>项目管理</span>
+</div>
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span>设置</span>
+</div>
+</nav>
+<div class="p-4 border-t border-[#45465233]">
+<div class="flex items-center px-3 py-2 text-[#C6C5D5] hover:bg-[#292A2C] transition-colors rounded-lg cursor-pointer">
+<span class="material-symbols-outlined mr-3">help</span>
+<span>帮助</span>
+</div>
+<div class="mt-4 flex items-center gap-3 px-3">
+<img alt="User Avatar" class="w-8 h-8 rounded-full bg-surface-container-highest" data-alt="User profile avatar icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkHO2kjbTqIU1XqORbFzsjMR1Y-XtGtHSUqxVRbXNq3pbC85rfVLPChtOSz1A3h_ZqOo4-CGT7URf2vN49LTzIoDLLDMKnVU-EtIqfph5M1PFTRmo6eo46Fvy6Tu2pVAFdR8cMZ6___w0QEtK4kjHDgaLCklqWm0253YIHDFmAZP0EU37DkfwdPVM6u6UuRz4Fg6eTfjlDK9F8nYl_xeF3VyYaseMWBg3OgucgGRfdbrsu86GB075R9wA9fGf6RszWrf5npxmKWP2K"/>
+<div class="flex flex-col overflow-hidden">
+<span class="truncate text-on-surface font-semibold text-xs">Aris Architect</span>
+<span class="truncate text-on-surface-variant text-[10px]">Lead Designer</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col h-screen bg-surface">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="fixed top-0 right-0 left-64 flex justify-between items-center px-6 z-30 w-full h-14 border-b border-[#45465233] bg-[#121315]/70 backdrop-blur-xl font-['Inter'] text-sm">
+<div class="flex items-center gap-4">
+<span class="font-semibold text-primary">任务中心</span>
+<div class="h-4 w-[1px] bg-outline-variant opacity-30"></div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs w-64 placeholder:text-on-surface-variant/40" placeholder="搜索项目、任务或 ID..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-1.5 text-on-surface-variant hover:text-[#BDC2FF] transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-[#BDC2FF] transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant/30">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Small circular user profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6HAKLFsEB21T9QOe9LWE5kR1uda7lP_wM_sM9zUSpcYc4Q3sPP4SF_WzXoQYL4C4hi7c1KKpyeV0c_Hs9vYQqRMUAaEXYfAGeKhnCrM2G9ifRP2BJT8PQgYF8HPVfjMn12RXV3pBKvOI_r2hsMGmr93bsZdFcHcZxh8u4P9VhlmAFtryGkWm0yFeV3GdeafhIbz9iF-zPHi5plhW6gbDn-_1coaGnY6VSL6cljQk4myn9PxLK0Xlhq_cR7tpUGGRMQxq4ZJRxUJ2W"/>
+</div>
+</div>
+</header>
+<!-- Tool Bar / Filters -->
+<div class="mt-14 h-12 border-b border-outline-variant/10 px-6 flex items-center gap-6 bg-surface/50">
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-container-high px-2 py-1 rounded transition-colors group">
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">项目:</span>
+<span class="text-xs font-medium text-primary flex items-center gap-1">Redmine Pro <span class="material-symbols-outlined text-[14px]">expand_more</span></span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-container-high px-2 py-1 rounded transition-colors group">
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">类型:</span>
+<span class="text-xs font-medium text-on-surface flex items-center gap-1">功能需求 <span class="material-symbols-outlined text-[14px]">expand_more</span></span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-container-high px-2 py-1 rounded transition-colors group">
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">状态:</span>
+<span class="text-xs font-medium text-on-surface flex items-center gap-1">进行中 <span class="material-symbols-outlined text-[14px]">expand_more</span></span>
+</div>
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-container-high px-2 py-1 rounded transition-colors group">
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">指派给:</span>
+<div class="flex items-center gap-1.5">
+<img class="w-4 h-4 rounded-full" data-alt="User avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgciOiG1id-TkDK-WtHzDDDi7bpjzD0W12fBHmB1mPsHsOMqSadZy7VGrrcLZt7fWC_UYG-4aCMXIlCRdXRBsLMyiqIeodR8Rc-pbJ836U_8-tYQTLPtXARaKH4Kgt09k02W41s7n3nSoFddtEhRrmlu81_-iOt-i95dcjRFGfIRsfgxMZidtbnYKM7zk7dTVvu64LMhPXqwlLmSUdhek6yR7-ktk67fRTpDmRqP0j-ZXOiP9QSxdUAM-mvgHMXopD65ylQO0uqLwA"/>
+<span class="text-xs font-medium text-on-surface flex items-center gap-1">Aris <span class="material-symbols-outlined text-[14px]">expand_more</span></span>
+</div>
+</div>
+<div class="ml-auto flex items-center gap-2">
+<button class="text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors font-medium">重置筛选</button>
+<div class="h-4 w-[1px] bg-outline-variant/20 mx-2"></div>
+<button class="p-1 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">view_kanban</span></button>
+<button class="p-1 text-primary"><span class="material-symbols-outlined">view_agenda</span></button>
+</div>
+</div>
+<!-- Master-Detail Container -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left List: Task Cards -->
+<section class="w-[380px] border-r border-outline-variant/10 flex flex-col bg-surface-container-lowest/30">
+<div class="p-4 flex justify-between items-center bg-surface/40">
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">共 42 个任务</span>
+<button class="p-1 hover:bg-surface-container rounded"><span class="material-symbols-outlined text-[18px]">sort</span></button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
+<!-- Task Card: Active -->
+<div class="p-3 bg-surface-container-high rounded-lg border-l-2 border-primary cursor-pointer transition-all duration-200">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-mono text-primary">#4029</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-secondary-container/40 text-on-secondary-container">进行中</span>
+</div>
+<h4 class="text-sm font-medium text-on-surface mb-2 leading-tight">优化深色模式下的对比度与高密度布局适配</h4>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-on-surface-variant">更新于 12 分钟前</span>
+<img class="w-5 h-5 rounded-full border border-outline-variant/50" data-alt="Assignee avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXuLh2e8iUl7kwphqbdKGJGd-hTneeWAUg5smjGb2_fqLfdb1GxA8LwONV2JuAr_gGQyX-8Yv0snPQw_DoMgjZsJE9lDTnWo3JohBHNNLzYTlIKSfJm9vF7Hzk1GVFtQBurTzxa7FqXtnBfp0Uw15GJlh1lhUg8Lg1pdZFk3HGmY_uy3IJPL88R4DznKl6mgLb-M49ikiUdURs2MAyd0WH4_mGE71GsWpHUN9ShOiWxYwRhcCSRYZiwLhu6XJetRu-xcrqJclBO7u8"/>
+</div>
+</div>
+<!-- Task Card: Normal -->
+<div class="p-3 bg-surface-container/50 hover:bg-surface-container rounded-lg cursor-pointer transition-all duration-200 border-l-2 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-mono text-on-surface-variant">#4028</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">待处理</span>
+</div>
+<h4 class="text-sm font-medium text-on-surface/80 mb-2 leading-tight">实现 Markdown 编辑器的实时预览功能</h4>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-on-surface-variant/60">更新于 2 小时前</span>
+<img class="w-5 h-5 rounded-full border border-outline-variant/50 opacity-60" data-alt="Assignee avatar muted" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVXRJ6gS6FfDihvpcfFC08__MRFY3FffD51s23JOHSIZawvWPPXJL4U_hIGCQCSj64V5HIjh8_eAAD1awQlSbOZ4nhAUs3EosHYTARLjGLM4oJ8fvQOxJSR8_FFqh6rEFrGhNdZvEK5Xx0SMe-9tu2KnpQ9dAR6xLwzDNZYiIoeK_ycdr4H3hH8G7CgVOe4nh4_fq7UZ6ZNMieklv8keGjvZEg6J054TcNvt64Wewsgn1laOJlHV9s3Z3al78gFacWvOuF5SdeXGS8"/>
+</div>
+</div>
+<!-- Task Card: High Priority -->
+<div class="p-3 bg-surface-container/50 hover:bg-surface-container rounded-lg cursor-pointer transition-all duration-200 border-l-2 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-mono text-error">#4015</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-error-container/20 text-error">紧急</span>
+</div>
+<h4 class="text-sm font-medium text-on-surface/80 mb-2 leading-tight">修复生产环境下的工时同步延迟问题</h4>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-on-surface-variant/60">更新于 昨日 18:42</span>
+<img class="w-5 h-5 rounded-full border border-outline-variant/50" data-alt="Assignee avatar high priority" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6txFkBp9LGMXyLU4PYnmT1JBLmRexkGbSTVQUxR0-2bYTFRTQY5tpQ4zXbC8xVFQVvb3aPoIMxWjL2fOlJFFdtDdwL0YtgKWoujnTwxkASsvjaKCfMJUPtk7NnqwefpjKnU5vaiAYSQSHCzYK8PEJtAB0EOkB4hb78pZ-Tzj_0YhcfiL7T3Dni-aJtuq89CPLPxWzUNMC0_F4HPyMBkGocxW3BAGLwrhueipx0dltZFnS4_7UlCKNlWZb2wJtPkWWjTTQuX-Wd7ef"/>
+</div>
+</div>
+<!-- Filler cards for density -->
+<div class="p-3 bg-surface-container/50 hover:bg-surface-container rounded-lg cursor-pointer transition-all duration-200 border-l-2 border-transparent">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[10px] font-mono text-on-surface-variant">#3998</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">已完成</span>
+</div>
+<h4 class="text-sm font-medium text-on-surface/80 mb-2 leading-tight">重构 API 认证中间件</h4>
+<div class="flex justify-between items-center">
+<span class="text-[10px] text-on-surface-variant/60">3 天前</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant/50" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Detail Pane -->
+<section class="flex-1 flex flex-col bg-surface overflow-hidden relative">
+<!-- Detail Header -->
+<div class="px-8 py-6 border-b border-outline-variant/10">
+<div class="flex items-center gap-3 mb-2">
+<span class="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">ISSUE #4029</span>
+<span class="text-[10px] text-on-surface-variant">/</span>
+<span class="text-[10px] text-on-surface-variant hover:text-primary cursor-pointer transition-colors">Redmine Pro Next-Gen</span>
+</div>
+<h1 class="text-2xl font-bold tracking-tight text-on-surface mb-4">优化深色模式下的对比度与高密度布局适配</h1>
+<div class="flex items-center gap-6">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-surface" data-alt="Collaborator avatar 1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFe6nP2a7cvm7wByXQaDfNHCJ_pHBICDQxB8AeJIKQhyyxWwo1rpWStpdUDcCZlHSCluqARIK9DTRXuEe7JBdFgJQ_u2N3XEczmVds5E94VdVQFwsfCewl6bV-pex6Y3Ut7KlJTiVBBTyAhIDzAPP_JiujQEpPDezbY69jQD7_DcCZJTl57mMtKNZb0713uBsL40auAvT2mHpWYHk-i-kKjObTGfUU1yntNWsykn0yxziqfwVDE-txLH8w3Zi87yfbKxZ9SYO5tg97"/>
+<img class="w-6 h-6 rounded-full border-2 border-surface" data-alt="Collaborator avatar 2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFSHOoKET4D0Sumj9FhXU8LPSGIg4t5_T5jOQWF8Y3xx8XLdST-Pfn7XbCNyijx_O_soNpDibiaJei8GoONnrEzM9hnaHNLxJgHygIWdZ8-6q8CDBL5O0F_rfumPKQtBEcydZLoAHoKCjaEa9JJlUk9QJSz3hR2cwByoj7Mz2yCH153dMQKAUrtQa41BqJuPkslkfpTrc_2PGWEKfkrdlXDwfFLffi-U7ebMNvFn_UtQIJ7X3O1gSg9U0V75mWy5t644OaSynDFuR3"/>
+<div class="w-6 h-6 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-[8px]">+3</div>
+</div>
+<div class="h-4 w-[1px] bg-outline-variant/20"></div>
+<div class="flex items-center gap-4 text-xs text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">calendar_today</span> 截止: 2023-10-24</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">chat_bubble</span> 14 条评论</span>
+</div>
+</div>
+</div>
+<!-- Detail Content Scrollable -->
+<div class="flex-1 overflow-y-auto custom-scrollbar px-8 py-6">
+<div class="grid grid-cols-12 gap-8">
+<!-- Main Content (Markdown Rendered style) -->
+<div class="col-span-8 space-y-6">
+<div>
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-3">任务描述</h3>
+<div class="prose prose-invert prose-sm max-w-none text-on-surface/90 leading-relaxed space-y-4">
+<p>当前的 UI 在低亮度环境下（特别是 OLED 屏幕）存在黑阶过渡不自然的问题。我们需要针对 Graphite-on-Graphite 方案进行微调：</p>
+<ul class="list-disc list-inside space-y-1 ml-2 text-on-surface-variant">
+<li>引入 <code>surface_container_lowest</code> 作为背景锚点</li>
+<li>移除所有 100% 不透明度的边框，改为 tonal shifts</li>
+<li>调整 <code>on_surface_variant</code> 的对比度以符合 WCAG AA 标准</li>
+</ul>
+<div class="p-3 bg-surface-container-lowest border border-outline-variant/10 rounded-lg font-mono text-[11px] text-primary/80">
+                                        // TODO: 更新 tailwind.config.js<br/>
+                                        "surface-container-low": "#1b1c1e",<br/>
+                                        "surface-container": "#1f2022"
+                                    </div>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/10">
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4">历史记录</h3>
+<div class="space-y-6">
+<div class="flex gap-3">
+<img class="w-7 h-7 rounded-full" data-alt="Commenter avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASBKY2LixU7AkybJtFT4MmzKsfjlCWolfTaH3Eiv1c9rFx8LPR_dUtMjlqWDbAAOI8nlq5zLFWgMuXWS9WARFpieTfVxC7HswZcC4FUXM8EPiL31r6T5XDNRCcguu4626elarZ3YXNJjU5o11oO2B5DOETOCgH1h4o2xyWvA8Z55303spFQMP_6lFX_LxB8TtheS8jo3ydK46SgP9EZqbr7gDvJXWbnjTSK9unbL35Eg5swnSRdesOrR-yzu1GT1yelfPRLQwMqveu"/>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold text-on-surface">Mark Zhang</span>
+<span class="text-[10px] text-on-surface-variant">2 小时前</span>
+</div>
+<div class="p-3 bg-surface-container rounded-lg rounded-tl-none text-xs text-on-surface-variant">
+                                                已经初步完成了侧边栏的颜色重写，大家可以先在 <code>dev-ui-fix</code> 分支预览一下。
+                                            </div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[14px]">edit</span>
+</div>
+<div class="flex-1 pt-1">
+<p class="text-[11px] text-on-surface-variant">
+<span class="font-bold text-on-surface">系统</span> 将状态从 <span class="line-through">待处理</span> 变更为 <span class="text-primary font-medium">进行中</span> • 12 分钟前
+                                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Edit Panel (Asymmetric Sidebar) -->
+<div class="col-span-4">
+<div class="bg-surface-container-low rounded-xl p-4 sticky top-0 space-y-5 border border-outline-variant/5">
+<h3 class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant border-b border-outline-variant/10 pb-2">快速编辑</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] text-on-surface-variant mb-1.5">任务状态</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-lg text-xs py-2 px-3 text-on-surface focus:ring-1 focus:ring-primary/40">
+<option>待处理</option>
+<option selected="">进行中</option>
+<option>已解决</option>
+<option>已关闭</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] text-on-surface-variant mb-1.5">负责人</label>
+<div class="relative group">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg text-xs py-2 px-3 text-on-surface focus:ring-1 focus:ring-primary/40" type="text" value="Aris Architect"/>
+<span class="absolute right-3 top-2 material-symbols-outlined text-[16px] text-on-surface-variant">search</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<div>
+<label class="block text-[10px] text-on-surface-variant mb-1.5">优先级</label>
+<select class="w-full bg-surface-container-lowest border-none rounded-lg text-xs py-2 px-3 text-on-surface focus:ring-1 focus:ring-primary/40">
+<option>低</option>
+<option selected="">普通</option>
+<option>高</option>
+<option class="text-error">紧急</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] text-on-surface-variant mb-1.5">预估工时</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none rounded-lg text-xs py-2 px-3 text-on-surface focus:ring-1 focus:ring-primary/40" type="number" value="8"/>
+<span class="absolute right-3 top-2 text-[10px] text-on-surface-variant">h</span>
+</div>
+</div>
+</div>
+<div>
+<label class="block text-[10px] text-on-surface-variant mb-1.5">完成百分比</label>
+<div class="flex items-center gap-3">
+<div class="flex-1 h-1.5 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[35%]"></div>
+</div>
+<span class="text-[10px] font-mono text-on-surface">35%</span>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 space-y-2">
+<button class="w-full py-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+<span class="material-symbols-outlined text-[18px]">timer</span> 登记工时
+                                    </button>
+<button class="w-full py-2 bg-transparent border border-outline-variant/20 hover:bg-surface-container-highest text-on-surface rounded-lg text-xs font-medium transition-all">
+                                        启动计时器
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer (Floating in detail pane) -->
+<div class="h-16 px-8 border-t border-outline-variant/10 bg-surface/80 backdrop-blur-md flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input class="bg-surface-container border-none rounded-full px-4 py-1.5 text-xs w-96 focus:ring-1 focus:ring-primary/30" placeholder="回复此任务..." type="text"/>
+<button class="p-1.5 text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined">attachment</span></button>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-xs text-on-surface-variant hover:text-on-surface px-3 py-1.5">取消</button>
+<button class="bg-primary-container text-on-primary-container px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2">
+                            发送回复 <span class="material-symbols-outlined text-[14px]">send</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Shell (Authority: JSON) -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 border-t border-[#45465233] bg-[#0D0E10] flex justify-between items-center px-4 font-mono text-[10px] uppercase tracking-widest">
+<div class="flex items-center gap-4">
+<span class="text-[#454652]">v2.4.0-stable | Connected to redmine.internal</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-[#5E6AD2]">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[#BDC2FF]">Active Task: #4029 - 00:12:45</span>
+</div>
+<div class="h-3 w-[1px] bg-outline-variant/20"></div>
+<div class="flex items-center gap-1 text-[#454652] hover:text-[#E3E2E4] cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span>Synchronized</span>
+</div>
+</div>
+</footer>
+</main>
+<!-- Global Ghost Borders (Design System Principle) -->
+<div class="fixed inset-0 pointer-events-none border border-outline-variant/5"></div>
+</body></html>

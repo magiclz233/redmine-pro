@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Redmine Pro - Smart Workbench</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bdc2ff",
+              "surface-container-low": "#1b1c1e",
+              "surface-container-high": "#292a2c",
+              "on-tertiary-fixed": "#2b1700",
+              "on-primary": "#121f8b",
+              "on-secondary-fixed": "#13183d",
+              "on-secondary-fixed-variant": "#3f446b",
+              "inverse-primary": "#4854bb",
+              "surface-bright": "#38393b",
+              "on-secondary-container": "#b1b5e3",
+              "outline": "#908f9e",
+              "on-primary-fixed-variant": "#2e3aa2",
+              "surface-container": "#1f2022",
+              "primary-container": "#5e6ad2",
+              "surface-container-lowest": "#0d0e10",
+              "on-error-container": "#ffdad6",
+              "primary": "#bdc2ff",
+              "secondary-fixed-dim": "#c0c3f2",
+              "primary-fixed": "#dfe0ff",
+              "outline-variant": "#454652",
+              "tertiary-fixed": "#ffddbb",
+              "inverse-on-surface": "#303033",
+              "secondary-container": "#42466e",
+              "on-secondary": "#292d53",
+              "on-primary-container": "#fdfaff",
+              "surface-container-highest": "#343537",
+              "tertiary-fixed-dim": "#ffb867",
+              "tertiary": "#ffb867",
+              "on-tertiary": "#482900",
+              "on-primary-fixed": "#000965",
+              "on-tertiary-fixed-variant": "#673d00",
+              "tertiary-container": "#a56500",
+              "on-tertiary-container": "#fffaf8",
+              "error": "#ffb4ab",
+              "on-surface-variant": "#c6c5d5",
+              "background": "#121315",
+              "surface": "#121315",
+              "surface-tint": "#bdc2ff",
+              "error-container": "#93000a",
+              "surface-dim": "#121315",
+              "on-error": "#690005",
+              "on-surface": "#e3e2e4",
+              "surface-variant": "#343537",
+              "secondary-fixed": "#dfe0ff",
+              "secondary": "#c0c3f2",
+              "inverse-surface": "#e3e2e4",
+              "on-background": "#e3e2e4"
+            },
+            fontFamily: {
+              "headline": ["Inter", "PingFang SC"],
+              "body": ["Inter", "PingFang SC"],
+              "label": ["Inter", "PingFang SC"],
+              "mono": ["JetBrains Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'PingFang SC', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-panel { background: rgba(52, 53, 55, 0.7); backdrop-filter: blur(20px); }
+        .scrolling-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface select-none overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 flex flex-col z-40 bg-[#1B1C1E] border-r border-[#45465233] font-['Inter','PingFang_SC'] text-xs font-medium tracking-tight">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-[#bdc2ff] to-[#5e6ad2] flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-xl">terminal</span>
+</div>
+<div>
+<div class="text-lg font-bold tracking-tighter text-[#E3E2E4]">Redmine Pro</div>
+<div class="text-[10px] text-on-surface-variant opacity-60">The Monolith</div>
+</div>
+</div>
+<div class="px-4 mb-6">
+<button class="w-full py-2.5 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center gap-2 transition-transform scale-95 active:opacity-80">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>新任务</span>
+</button>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#1F2022] text-[#BDC2FF] border-r-2 border-[#5E6AD2]" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>工作台</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C6C5D5] hover:bg-[#292A2C] transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>任务中心</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C6C5D5] hover:bg-[#292A2C] transition-colors" href="#">
+<span class="material-symbols-outlined">history_toggle_off</span>
+<span>工时日志</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C6C5D5] hover:bg-[#292A2C] transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>组长看板</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C6C5D5] hover:bg-[#292A2C] transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span>项目管理</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#C6C5D5] hover:bg-[#292A2C] transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>设置</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-[#45465233]">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#292A2C] cursor-pointer transition-all">
+<img alt="User Avatar" class="w-8 h-8 rounded-full bg-surface-container-high" data-alt="Professional user profile avatar small" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOd2yAi0SaJuVftntl2d3t4HrE5SKf10XA8tpGiILOTPr8XzMmtqFsugKhKCYLBQ8fZmvuIBZX6IQMmsjlxeQIun1ZWCLWJFnobHgB77IfcKXrkMkLx8bEgvIXcM2FRoxZ1RqBIck-9k415f_3rqKNGiZfOV_iVh_WaIAia3Z3AmNnwt-UkXXCRjHSBectam0RPszsVgNxC8BcTdR581PrWZWQpkYSZuIxq5JV-VUZqTZ5zKcEghkBFDg0aj2DK_AtfrCUrSSdU0Sq"/>
+<div class="flex-1 overflow-hidden">
+<div class="truncate text-[#E3E2E4]">Admin User</div>
+<div class="text-[10px] text-on-surface-variant">Developer</div>
+</div>
+<span class="material-symbols-outlined text-[#C6C5D5]">help</span>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-64 h-14 bg-[#121315]/70 backdrop-blur-xl border-b border-[#45465233] flex justify-between items-center px-6 z-30 font-['Inter'] text-sm">
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-medium">智能工作台</span>
+<span class="text-outline-variant">/</span>
+<span class="text-on-surface">个人总览</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline text-sm">search</span>
+<input class="bg-surface-container-lowest border-none rounded-md pl-10 pr-4 py-1.5 w-64 text-xs focus:ring-1 focus:ring-primary/40 placeholder:text-outline/50" placeholder="搜索任务、ID或文档..." type="text"/>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">help</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 mt-14 mb-8 p-6 overflow-y-auto h-[calc(100vh-5.5rem)] scrolling-hide">
+<div class="grid grid-cols-12 gap-6">
+<!-- Core Metrics Bento -->
+<div class="col-span-12 grid grid-cols-4 gap-4 mb-2">
+<div class="bg-surface-container p-4 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider">指派给我</span>
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">person</span>
+</div>
+<div class="text-3xl font-bold font-mono text-primary">14</div>
+<div class="mt-2 text-[10px] text-on-surface-variant flex items-center gap-1">
+<span class="text-error">↑ 2</span> 较昨日新增
+                    </div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider">待处理</span>
+<span class="material-symbols-outlined text-tertiary group-hover:scale-110 transition-transform">pending_actions</span>
+</div>
+<div class="text-3xl font-bold font-mono text-tertiary">3</div>
+<div class="mt-2 text-[10px] text-on-surface-variant flex items-center gap-1">
+                        需尽快排期
+                    </div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider">今日耗时</span>
+<span class="material-symbols-outlined text-secondary group-hover:scale-110 transition-transform">timer</span>
+</div>
+<div class="text-3xl font-bold font-mono text-on-surface">06:45</div>
+<div class="mt-2 flex h-1 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="bg-primary w-[84%]"></div>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl border border-transparent hover:border-outline-variant/30 transition-all group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs text-on-surface-variant uppercase tracking-wider">系统负载</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:scale-110 transition-transform">memory</span>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between text-[10px] font-mono">
+<span class="text-on-surface-variant">CPU</span>
+<span class="text-primary">42%</span>
+</div>
+<div class="flex justify-between text-[10px] font-mono">
+<span class="text-on-surface-variant">MEM</span>
+<span class="text-secondary">6.2GB</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Task List Main -->
+<div class="col-span-12 lg:col-span-9 space-y-4">
+<div class="flex justify-between items-end">
+<h2 class="text-sm font-semibold tracking-tight text-on-surface">指派给我的任务</h2>
+<div class="flex gap-2">
+<button class="px-2 py-1 text-[10px] bg-surface-container-high text-on-surface-variant rounded hover:text-on-surface transition-colors">全部任务</button>
+<button class="px-2 py-1 text-[10px] bg-surface-container-high text-on-surface-variant rounded hover:text-on-surface transition-colors">仅超期</button>
+</div>
+</div>
+<div class="bg-surface-container rounded-xl overflow-hidden border border-[#4546521a]">
+<table class="w-full text-left text-xs">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant/70 border-b border-outline-variant/10">
+<th class="px-4 py-3 font-medium">任务 #</th>
+<th class="px-4 py-3 font-medium">标题</th>
+<th class="px-4 py-3 font-medium">优先级</th>
+<th class="px-4 py-3 font-medium">状态</th>
+<th class="px-4 py-3 font-medium">截止日期</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-4 py-4 font-mono text-outline">#4029</td>
+<td class="px-4 py-4 font-medium text-on-surface group-hover:text-primary transition-colors">重构工作台侧边栏导航逻辑</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 rounded bg-error/10 text-error text-[10px] border border-error/20">紧急</span>
+</td>
+<td class="px-4 py-4">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 进行中
+                                    </span>
+</td>
+<td class="px-4 py-4 text-error font-mono font-medium">2024-06-15 (超期)</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-4 py-4 font-mono text-outline">#3984</td>
+<td class="px-4 py-4 font-medium text-on-surface group-hover:text-primary transition-colors">API 接口性能瓶颈分析</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 rounded bg-tertiary/10 text-tertiary text-[10px] border border-tertiary/20">高</span>
+</td>
+<td class="px-4 py-4">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-variant"></span> 待处理
+                                    </span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant font-mono">2024-06-22</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-4 py-4 font-mono text-outline">#4102</td>
+<td class="px-4 py-4 font-medium text-on-surface group-hover:text-primary transition-colors">修复 PDF 导出在多语言环境下的乱码问题</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 rounded bg-secondary-container/30 text-secondary text-[10px] border border-secondary-container/50">普通</span>
+</td>
+<td class="px-4 py-4">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> 进行中
+                                    </span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant font-mono">2024-06-25</td>
+</tr>
+<tr class="hover:bg-surface-container-high transition-colors group">
+<td class="px-4 py-4 font-mono text-outline">#4128</td>
+<td class="px-4 py-4 font-medium text-on-surface group-hover:text-primary transition-colors">同步 JIRA 数据到 Redmine 镜像库</td>
+<td class="px-4 py-4">
+<span class="px-2 py-0.5 rounded bg-outline-variant/20 text-on-surface-variant text-[10px]">低</span>
+</td>
+<td class="px-4 py-4">
+<span class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-variant"></span> 待处理
+                                    </span>
+</td>
+<td class="px-4 py-4 text-on-surface-variant font-mono">2024-06-30</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Milestone Progress -->
+<div class="mt-8 space-y-4">
+<h2 class="text-sm font-semibold tracking-tight text-on-surface">关键里程碑进度</h2>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container p-4 rounded-xl">
+<div class="flex justify-between items-center mb-3">
+<span class="text-xs font-medium">v2.4.0 核心重构</span>
+<span class="text-xs font-mono text-primary">72%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[72%]"></div>
+</div>
+<div class="mt-2 flex justify-between text-[10px] text-outline">
+<span>截止: 07-15</span>
+<span>12 剩余任务</span>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-xl">
+<div class="flex justify-between items-center mb-3">
+<span class="text-xs font-medium">自动化测试覆盖</span>
+<span class="text-xs font-mono text-secondary">45%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-[45%]"></div>
+</div>
+<div class="mt-2 flex justify-between text-[10px] text-outline">
+<span>截止: 08-01</span>
+<span>8 剩余任务</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar -->
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<!-- Mini Calendar -->
+<div class="bg-surface-container p-4 rounded-xl">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xs font-bold text-on-surface">2024年 6月</h3>
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-xs cursor-pointer text-outline hover:text-on-surface">chevron_left</span>
+<span class="material-symbols-outlined text-xs cursor-pointer text-outline hover:text-on-surface">chevron_right</span>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-1 text-center text-[10px]">
+<span class="text-outline-variant py-1">一</span>
+<span class="text-outline-variant py-1">二</span>
+<span class="text-outline-variant py-1">三</span>
+<span class="text-outline-variant py-1">四</span>
+<span class="text-outline-variant py-1">五</span>
+<span class="text-outline-variant py-1">六</span>
+<span class="text-outline-variant py-1">日</span>
+<!-- Calendar Days -->
+<span class="p-2 text-outline-variant/30">27</span>
+<span class="p-2 text-outline-variant/30">28</span>
+<span class="p-2 text-outline-variant/30">29</span>
+<span class="p-2 text-outline-variant/30">30</span>
+<span class="p-2 text-outline-variant/30">31</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">1</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">2</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">3</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">4</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer relative">5<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></span></span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">6</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">7</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">8</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">9</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">10</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">11</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer relative">12<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-tertiary rounded-full"></span></span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">13</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">14</span>
+<span class="p-2 bg-primary/20 text-primary font-bold rounded cursor-pointer relative">15<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></span></span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">16</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">17</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer relative">18<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full"></span></span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">19</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer relative">20<span class="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-secondary rounded-full"></span></span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">21</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">22</span>
+<span class="p-2 text-on-surface hover:bg-surface-container-high rounded cursor-pointer">23</span>
+</div>
+</div>
+<!-- Project Quick Links -->
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/10">
+<h3 class="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-3">常用项目</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-3 group cursor-pointer p-1.5 rounded hover:bg-surface-container-high transition-all">
+<span class="w-2 h-2 rounded bg-[#5e6ad2]"></span>
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">Redmine NextGen</span>
+</div>
+<div class="flex items-center gap-3 group cursor-pointer p-1.5 rounded hover:bg-surface-container-high transition-all">
+<span class="w-2 h-2 rounded bg-tertiary"></span>
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">Ops Automation</span>
+</div>
+<div class="flex items-center gap-3 group cursor-pointer p-1.5 rounded hover:bg-surface-container-high transition-all">
+<span class="w-2 h-2 rounded bg-error"></span>
+<span class="text-xs text-on-surface-variant group-hover:text-on-surface">Hotfix 2024Q2</span>
+</div>
+</div>
+</div>
+<!-- Activity Feed -->
+<div class="space-y-3">
+<h3 class="text-[10px] font-bold text-outline-variant uppercase tracking-widest">最近活动</h3>
+<div class="relative pl-4 space-y-4 before:content-[''] before:absolute before:left-0 before:top-1 before:bottom-1 before:w-[1px] before:bg-outline-variant/20">
+<div class="relative">
+<span class="absolute -left-[20px] top-1 w-2 h-2 rounded-full bg-primary border-2 border-background"></span>
+<div class="text-[10px] text-on-surface-variant">10 分钟前</div>
+<div class="text-[11px] text-on-surface">你 更新了任务 <span class="text-primary">#4029</span> 的状态为 [进行中]</div>
+</div>
+<div class="relative">
+<span class="absolute -left-[20px] top-1 w-2 h-2 rounded-full bg-outline-variant border-2 border-background"></span>
+<div class="text-[10px] text-on-surface-variant">2 小时前</div>
+<div class="text-[11px] text-on-surface">Zack 指派了 <span class="text-primary">#4128</span> 给你</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 right-0 left-64 h-8 bg-[#0D0E10] border-t border-[#45465233] flex justify-between items-center px-4 z-40">
+<div class="flex items-center gap-4 font-mono text-[10px] uppercase tracking-widest text-[#454652]">
+<span>v2.4.0-stable | Connected to redmine.internal</span>
+<div class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_#bdc2ff]"></span>
+<span class="text-primary">Server: Tokyo-01 (Ping: 14ms)</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<a class="text-[#5E6AD2] font-mono text-[10px] uppercase tracking-widest hover:text-[#E3E2E4] transition-colors" href="#">Active Task: #4029 - 00:12:45</a>
+</div>
+</footer>
+</body></html>
