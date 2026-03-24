@@ -93,10 +93,12 @@ type currentUserResponse struct {
 }
 
 type userResponse struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Login string `json:"login"`
-	Mail  string `json:"mail"`
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Login     string `json:"login"`
+	Mail      string `json:"mail"`
 }
 
 type membershipListResponse struct {

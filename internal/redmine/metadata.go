@@ -1,6 +1,9 @@
 package redmine
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 // GetCurrentUser 获取当前 API Key 对应的用户信息。
 func (c *Client) GetCurrentUser() (User, error) {
@@ -9,9 +12,18 @@ func (c *Client) GetCurrentUser() (User, error) {
 		return User{}, err
 	}
 
+	name := response.User.Name
+	if name == "" {
+		if response.User.Firstname != "" || response.User.Lastname != "" {
+			name = strings.TrimSpace(response.User.Lastname + " " + response.User.Firstname)
+		} else {
+			name = response.User.Login
+		}
+	}
+
 	return User{
 		ID:    response.User.ID,
-		Name:  response.User.Name,
+		Name:  name,
 		Login: response.User.Login,
 		Mail:  response.User.Mail,
 	}, nil
