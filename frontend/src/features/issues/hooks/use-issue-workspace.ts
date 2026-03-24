@@ -18,12 +18,8 @@ export function useIssueWorkspace() {
   const redmineBaseUrl = useAppStore((state) => state.redmineBaseUrl);
   const apiKey = useAppStore((state) => state.apiKey);
   const statusFilter = useAppStore((state) => state.statusFilter);
-  const setCredentials = useAppStore((state) => state.setCredentials);
   const setStatusFilter = useAppStore((state) => state.setStatusFilter);
 
-  const [draftUrl, setDraftUrl] = useState(redmineBaseUrl);
-  const [draftApiKey, setDraftApiKey] = useState(apiKey);
-  const [saveMessage, setSaveMessage] = useState("");
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const [statusToUpdate, setStatusToUpdate] = useState("");
   const [assigneeId, setAssigneeId] = useState("");
@@ -139,11 +135,6 @@ export function useIssueWorkspace() {
     },
   });
 
-  const onSaveCredentials = () => {
-    setCredentials({ redmineBaseUrl: draftUrl, apiKey: draftApiKey });
-    setSaveMessage("配置已保存，正在按新配置加载数据。");
-  };
-
   const onRefresh = async () => {
     setActionMessage("");
     await Promise.all([
@@ -186,9 +177,6 @@ export function useIssueWorkspace() {
   return {
     redmineBaseUrl,
     apiKey,
-    draftUrl,
-    draftApiKey,
-    saveMessage,
     selectedIssueId,
     statusToUpdate,
     assigneeId,
@@ -206,13 +194,10 @@ export function useIssueWorkspace() {
     updateStatusMutation,
     assignIssueMutation,
     errorMessage,
-    setDraftUrl,
-    setDraftApiKey,
     setNotes,
     setActionMessage,
     setSelectedIssueId,
     setAssigneeId,
-    onSaveCredentials,
     onRefresh,
     onStatusFilterChange,
     onStatusToUpdateChange,
