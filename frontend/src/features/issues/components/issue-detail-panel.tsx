@@ -7,6 +7,7 @@ import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import type { main } from "../../../../wailsjs/go/models";
+import { getTrackerMeta, getPriorityMeta } from "./issues-list-panel";
 
 interface IssueDetailPanelProps {
   selectedIssueId: number | null;
@@ -130,13 +131,16 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
           </div>
           <div>
             <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">类型</p>
-            <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-2 ${getTrackerMeta(issue.trackerName).className}`}>
+              <MaterialSymbol name={getTrackerMeta(issue.trackerName).icon} className="text-[14px]" opticalSize={20} />
               <p className="text-sm font-medium text-on-surface">{issue.trackerName || "-"}</p>
             </div>
           </div>
           <div>
             <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">优先级</p>
-            <p className="text-sm font-medium text-on-surface">{issue.priorityName || "正常"}</p>
+            <span className={`inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-tighter ${getPriorityMeta(issue.priorityName).className}`}>
+              {getPriorityMeta(issue.priorityName).label}
+            </span>
           </div>
           
           <div className="col-span-4 my-2 h-px bg-outline-variant/10"></div>

@@ -2,7 +2,7 @@ import { MaterialSymbol } from "@/components/material-symbol";
 import type { main } from "../../../../wailsjs/go/models";
 
 // Mapping task type/tracker to specific colors/icons
-function getTrackerMeta(trackerName: string = "") {
+export function getTrackerMeta(trackerName: string = "") {
   const name = trackerName.toLowerCase();
   if (name.includes("bug") || name.includes("缺陷") || name.includes("错误")) {
     return { icon: "bug_report", className: "text-error" };
@@ -10,19 +10,23 @@ function getTrackerMeta(trackerName: string = "") {
   if (name.includes("feature") || name.includes("功能") || name.includes("需求")) {
     return { icon: "task", className: "text-primary" };
   }
+  if (name.includes("优化")) {
+    return { icon: "description", className: "text-secondary" };
+  }
   return { icon: "assignment", className: "text-on-surface-variant" };
 }
 
 // Mapping priority to specific colors/tags
-function getPriorityMeta(priorityName: string = "") {
+export function getPriorityMeta(priorityName: string = "") {
   const name = priorityName.toLowerCase();
+  const label = priorityName || "普通";
   if (name.includes("high") || name.includes("高") || name.includes("紧急")) {
-    return { label: "High", className: "bg-error-container text-on-error-container" };
+    return { label, className: "bg-error-container text-on-error-container" };
   }
   if (name.includes("low") || name.includes("低")) {
-    return { label: "Low", className: "bg-surface-variant text-on-surface-variant text-opacity-80" };
+    return { label, className: "bg-surface-variant text-on-surface-variant text-opacity-80" };
   }
-  return { label: "Normal", className: "bg-secondary-container text-on-secondary-container" };
+  return { label, className: "bg-secondary-container text-on-secondary-container" };
 }
 
 interface IssuesListPanelProps {
