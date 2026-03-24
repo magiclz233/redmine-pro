@@ -55,7 +55,7 @@ export function AppFrame() {
   return (
     <AppShell
       currentUser={{
-        name: sessionQuery.data?.name || "Redmine User",
+        name: sessionQuery.data?.name || "用户名称",
         login: sessionQuery.data?.login || "workspace",
       }}
     >
