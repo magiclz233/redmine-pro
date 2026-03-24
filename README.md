@@ -53,11 +53,11 @@
 
 ### 设计系统
 
-- 风格基线：`The Monolith`
-- 暗色主题：`Graphite Dark`
-- 亮色主题：`Linear Light`
-- 主题模式：`明 / 暗 / 跟随系统`
-- 设计稿来源：`ui/stitch_1.html` 到 `ui/stitch_7.html`
+- 结构定义基准：严格参考 `ui/stitch_1.html` 到 `ui/stitch_7.html` 提供的功能流和布局版式
+- 色彩体系：严格保留原设计稿中的 `The Monolith / Graphite Dark` 配色（深邃蓝紫/暖夜黑体系），不采用纯粹的绝对黑白风格。
+- 视觉与质感基准：在保留原始色板前提下，全维对标前沿高级界面，主打极度平滑过场与精致高光
+- 主题模式：支持 `明 / 暗 / 跟随系统`，全面支持暗界环境光掩蔽（Ambient Shadow）与毛玻璃联动
+- 关键特征：极致的空气感（White Space）、细微发光（Inner Glow）、克制且通用的表层层阶（Surface Hierarchy）
 
 ## 文档导航
 

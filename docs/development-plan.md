@@ -1,6 +1,6 @@
 # Redmine Pro 开发与架构主规划文档
 
-更新时间：2026-03-23
+更新时间：2026-03-24
 
 ## 1. 文档定位
 
@@ -30,7 +30,7 @@
 
 ## 3. 当前代码基线
 
-截至 2026-03-23，仓库内已有以下基础：
+截至 2026-03-24，仓库内已有以下基础：
 
 - [x] Wails 项目已初始化
 - [x] 前端已接入 `React + TypeScript + Tailwind CSS + shadcn/ui + Base UI + TanStack Query + Zustand`
@@ -45,8 +45,8 @@
 - `UpdateIssueStatus`
 - `AssignIssue`
 - [x] 前端已接入基础状态存储与 Wails 绑定调用
-- [ ] 还未形成稳定的页面路由体系
-- [ ] 还未按 Stitch 稿件完成统一的应用壳层
+- [x] 已形成基础页面路由体系与启动分流入口
+- [x] 已按 Stitch 稿件建立统一应用壳层骨架（固定侧栏、顶栏、底部状态栏）
 - [ ] 还未形成完整的任务中心、工时、项目管理、统计看板页面
 - [x] Redmine API 访问逻辑已从 `app.go` 拆分到 `internal/redmine`
 - [x] 前端已完成 `app / layouts / features` 首轮结构整理
@@ -227,13 +227,20 @@ UI 稿件与目标页面的对应关系固定如下：
 
 | UI 稿件 | 页面模块 | 目标路由 |
 | --- | --- | --- |
-| `stitch_1.html` | 连接与鉴权 | `/connect` |
+| `stitch_1.html` | 连接与鉴权 | 启动入口（无配置或校验失败时直达） |
 | `stitch_2.html` | 工作台 | `/dashboard` |
 | `stitch_3.html` | 任务中心 | `/issues` |
 | `stitch_4.html` | 研发组长看板 | `/analytics` |
 | `stitch_5.html` | 工时日志 | `/time-entries` |
 | `stitch_6.html` | 项目与版本管理 | `/projects` |
 | `stitch_7.html` | 设置 | `/settings` |
+
+补充约束：
+
+- `stitch_1.html` 不属于系统内主壳层页面，不再作为长期驻留的业务路由
+- 应用启动后先检测本地 Redmine 配置；无配置或当前配置校验失败时，直接显示 `stitch_1`
+- 只有在配置存在且通过 `GetCurrentUser` 校验后，才进入 `stitch_2` 到 `stitch_7` 对应的系统内页面
+- 系统内切换 Redmine 配置统一放在“设置”页处理，不再在任务中心等业务页顶部长期保留连接表单
 
 ## 7. 架构设计
 
@@ -320,7 +327,16 @@ internal/
 - `internal/redmine` 已完成首轮拆分
 - 在进入统计、项目管理和设置模块前，必须继续补齐 `internal/stats` 与 `internal/platform`
 
-### 7.4 数据建模规则
+### 7.4 Redmine 兼容基线与交付标准
+
+- 默认兼容基线必须以公司当前 Redmine 实例为准，即页面页脚显示的 `Powered by Redmine © 2006-2022 Jean-Philippe Lang`
+- 开发时不允许默认假设更高版本 Redmine 的新接口、新字段、新行为一定存在
+- 如果标准 Redmine API 能直接完成，就优先直接调用标准 API
+- 如果标准 Redmine API 不能直接满足需求，允许在 Go 侧通过二次聚合、分页拉取、字段映射、统计计算等方式补足
+- 无论采用“直接调用 API”还是“Go 侧二次聚合”的方案，最终交付标准都必须是“功能能在当前版本 Redmine 上真正跑通”
+- 如果某项需求在当前版本 Redmine 上无法可靠实现，必须在文档和实现说明中明确写出阻塞原因、版本限制与替代方案，不能只做静态页面或伪交互后标记为完成
+
+### 7.5 数据建模规则
 
 业务字段统一口径如下：
 
@@ -331,7 +347,7 @@ internal/
 - `设计 / 测试 / case`：优先映射到 `time entry activity` 或自定义字段
 - `版本 / 迭代`：统一映射到 `fixed_version`
 
-### 7.5 安全与本地数据
+### 7.6 安全与本地数据
 
 - API Key 不允许以明文保存在普通 Zustand persist 中
 - API Key 统一由 Go 侧持久化到 Keyring 或加密配置文件
@@ -375,24 +391,24 @@ internal/
 - [x] TanStack Query 接入
 - [x] Zustand 接入
 - [x] 基础 UI 组件已创建：Button / Input / Card / Badge / Select / Separator
-- [ ] 引入 `react-router-dom` 并完成应用路由骨架
+- [x] 引入 `react-router-dom` 并完成应用路由骨架
 - [x] 建立 `AppShell` 结构
-- [ ] 将 Stitch 暗色 Token 映射到当前 Tailwind Theme
-- [ ] 定义 Linear Light 亮色 Token
-- [ ] 建立 dark / light / system 三态主题 Store 与系统主题同步
-- [ ] 接入 Material Symbols 与 JetBrains Mono
-- [ ] 统一空态、加载态、错误态组件
+- [x] 将 Stitch 暗色 Token 映射到当前 Tailwind Theme
+- [x] 定义 Linear Light 亮色 Token
+- [x] 建立 dark / light / system 三态主题 Store 与系统主题同步
+- [x] 接入 Material Symbols 与 JetBrains Mono
+- [x] 统一空态、加载态、错误态组件
 - [x] 定义前端目录结构并完成首轮整理
 
 ### 9.2 Phase 1：连接页与应用壳层
 
-- [ ] 按 `stitch_1.html` 完成连接页 UI
-- [ ] 完成 Redmine URL 与 API Key 表单校验
-- [ ] 完成连接测试与错误提示
-- [ ] 完成多实例配置切换
+- [x] 按 `stitch_1.html` 完成连接页 UI
+- [x] 完成 Redmine URL 与 API Key 表单校验
+- [x] 完成连接测试与错误提示
+- [x] 完成多实例配置切换
 - [ ] 完成 API Key 安全存储
-- [ ] 完成侧栏导航、顶栏搜索、底部状态栏
-- [ ] 完成主题初始化、系统主题监听与壳层切换
+- [x] 完成侧栏导航、顶栏搜索、底部状态栏
+- [x] 完成主题初始化、系统主题监听与壳层切换
 
 ### 9.3 Phase 2：工作台
 
@@ -488,6 +504,7 @@ internal/
 
 - UI 已按对应 Stitch 稿件实现，结构和风格没有明显偏离
 - 使用真实 Redmine API 数据，或文档中明确标注当前为占位实现
+- 如果该模块属于真实交付范围，则必须在当前 Redmine 兼容基线上真正跑通，而不是仅完成静态 UI、假数据流程或理论实现
 - 具备加载态、空态、错误态
 - 关键操作具备成功与失败反馈
 - 不破坏现有构建
@@ -516,12 +533,20 @@ internal/
 | 2026-03-23 | 工程基线 | 已完成 | Wails 工程已初始化，前端基础技术栈已接入 |
 | 2026-03-23 | Redmine API 初始封装 | 已完成 | 已具备当前用户、状态、我的问题、问题详情、成员、状态更新、指派能力 |
 | 2026-03-23 | 需求与规划文档 | 已完成 | 已生成全功能需求清单与本开发主规划文档 |
+| 2026-03-24 | 路由骨架 | 已完成 | 已接入 react-router-dom，建立 /dashboard、/issues、/analytics、/time-entries、/projects、/settings 路由入口，并将现有任务中心挂到 /issues |
+| 2026-03-24 | 主题基础 | 已完成 | 已将 Stitch 暗色与 Linear Light Token 映射到 Tailwind Theme，并建立 dark / light / system 三态主题 Store、首屏主题初始化与系统主题同步 |
+| 2026-03-24 | 字体与图标 | 已完成 | 已接入 Material Symbols Outlined 与 JetBrains Mono，并将应用壳层导航切换为 Material Symbols，`font-mono` 统一映射到 JetBrains Mono |
+| 2026-03-24 | 状态组件 | 已完成 | 已抽取统一的 LoadingState / EmptyState / ErrorState，并替换任务中心中的列表空态、详情空态、详情加载态与全局错误态 |
+| 2026-03-24 | 连接页首版 | 已完成 | 已按 stitch_1.html 落地连接页 UI，补齐 URL / API Key 表单校验，并基于 GetCurrentUser 实现连接测试与错误提示 |
+| 2026-03-24 | 启动分流与实例切换 | 已完成 | 应用启动时先判断并校验当前配置；无配置时直接显示 stitch_1，配置通过后进入主壳层；设置页已支持保存多个实例、切换当前实例与删除实例 |
 
 ## 13. 下一步明确建议
 
 下一轮开发应优先做以下内容，不建议跳步：
 
-1. `Phase 0` 收尾：路由骨架、AppShell、设计 Token、字体与图标统一
-2. `Phase 1`：连接页与 API Key 安全存储
-3. `Phase 2`：工作台页面按 Stitch 稿落地
-4. `Phase 3`：任务中心页面替换现有临时 UI
+1. `Phase 1`：完成 API Key 安全存储，替换当前 localStorage 持久化方案
+2. `Phase 2`：工作台页面按 Stitch 稿落地，并接入真实摘要数据
+3. `Phase 3`：任务中心页面替换现有临时 UI，对齐 stitch_3 主从布局
+4. `Phase 4`：工时日志页面按 Stitch 稿落地
+
+

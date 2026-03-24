@@ -1,10 +1,11 @@
-import { IssueWorkspacePage } from "@/features/issues/pages/issue-workspace-page";
-import { AppShell } from "@/layouts/app-shell";
+import { HashRouter } from "react-router-dom";
+
+import { AppFrame } from "@/app/app-frame";
 
 export default function App() {
   return (
-    <AppShell>
-      <IssueWorkspacePage />
-    </AppShell>
+    <HashRouter>
+      <AppFrame />
+    </HashRouter>
   );
 }

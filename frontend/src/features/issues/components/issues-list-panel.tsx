@@ -1,19 +1,29 @@
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { MaterialSymbol } from "@/components/material-symbol";
 import type { main } from "../../../../wailsjs/go/models";
+
+// Mapping task type/tracker to specific colors/icons
+function getTrackerMeta(trackerName: string = "") {
+  const name = trackerName.toLowerCase();
+  if (name.includes("bug") || name.includes("缺陷") || name.includes("错误")) {
+    return { icon: "bug_report", className: "text-error" };
+  }
+  if (name.includes("feature") || name.includes("功能") || name.includes("需求")) {
+    return { icon: "task", className: "text-primary" };
+  }
+  return { icon: "assignment", className: "text-on-surface-variant" };
+}
+
+// Mapping priority to specific colors/tags
+function getPriorityMeta(priorityName: string = "") {
+  const name = priorityName.toLowerCase();
+  if (name.includes("high") || name.includes("高") || name.includes("紧急")) {
+    return { label: "High", className: "bg-error-container text-on-error-container" };
+  }
+  if (name.includes("low") || name.includes("低")) {
+    return { label: "Low", className: "bg-surface-variant text-on-surface-variant text-opacity-80" };
+  }
+  return { label: "Normal", className: "bg-secondary-container text-on-secondary-container" };
+}
 
 interface IssuesListPanelProps {
   totalCount: number;
@@ -27,81 +37,95 @@ interface IssuesListPanelProps {
 }
 
 export function IssuesListPanel(props: IssuesListPanelProps) {
-  const {
-    totalCount,
-    issues,
-    statusFilter,
-    statuses,
-    selectedIssueId,
-    isFetching,
-    onStatusFilterChange,
-    onIssueSelect,
-  } = props;
+  const { totalCount, issues, selectedIssueId, isFetching, onIssueSelect } = props;
 
   return (
-    <Card className="xl:col-span-3">
-      <CardHeader>
-        <CardTitle>我的问题列表</CardTitle>
-        <CardDescription>总数：{totalCount}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-            <SelectTrigger className="w-56">
-              <SelectValue placeholder="按状态筛选" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="*">全部状态</SelectItem>
-              {statuses.map((item) => (
-                <SelectItem key={item.id} value={String(item.id)}>
-                  {item.name} (#{item.id})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <section className="flex w-[420px] flex-col border-r border-outline-variant/10 bg-surface z-0 relative">
+      <div className="flex items-center justify-between bg-surface-container-low/30 p-4">
+        <h2 className="flex items-center gap-2 text-sm font-bold text-on-surface">
+          <span className="h-4 w-1 rounded-full bg-primary"></span>
+          指派给我
+          <span className="rounded bg-surface-container px-1.5 text-[10px] font-normal text-on-surface-variant">
+            {totalCount}
+          </span>
+        </h2>
+        <div className="flex gap-1">
+          <button className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high">
+            <MaterialSymbol name="filter_list" className="text-sm" opticalSize={20} />
+          </button>
+          <button className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high">
+            <MaterialSymbol name="sort" className="text-sm" opticalSize={20} />
+          </button>
         </div>
+      </div>
 
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="w-full min-w-[760px] border-collapse text-sm">
-            <thead className="bg-muted/50 text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium">ID</th>
-                <th className="px-3 py-2 text-left font-medium">主题</th>
-                <th className="px-3 py-2 text-left font-medium">项目</th>
-                <th className="px-3 py-2 text-left font-medium">状态</th>
-                <th className="px-3 py-2 text-left font-medium">指派给</th>
-                <th className="px-3 py-2 text-left font-medium">更新时间</th>
-              </tr>
-            </thead>
-            <tbody>
-              {issues.map((item) => (
-                <tr
-                  key={item.id}
-                  className={
-                    "cursor-pointer border-t transition-colors hover:bg-muted/40 " +
-                    (selectedIssueId === item.id ? "bg-primary/10" : "bg-card/60")
-                  }
-                  onClick={() => onIssueSelect(item.id)}
+      <div className="custom-scrollbar mt-2 flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 pb-4">
+        {isFetching && issues.length === 0 ? (
+          <div className="p-4 text-center text-xs text-on-surface-variant">加载中...</div>
+        ) : null}
+
+        {issues.map((item) => {
+          const isSelected = selectedIssueId === item.id;
+          const trackerMeta = getTrackerMeta(item.trackerName);
+          const priorityMeta = getPriorityMeta(item.priorityName);
+
+          return (
+            <div
+              key={item.id}
+              onClick={() => onIssueSelect(item.id)}
+              className={`group cursor-pointer rounded-lg border-l-4 p-3 transition-all ${
+                isSelected
+                  ? "border-primary bg-surface-container-high"
+                  : "border-transparent bg-surface-container hover:bg-surface-container-high"
+              }`}
+            >
+              <div className="mb-1 flex items-start justify-between">
+                <span
+                  className={`font-mono text-[10px] font-bold ${
+                    isSelected ? "text-primary" : "text-on-surface-variant"
+                  }`}
                 >
-                  <td className="px-3 py-2">#{item.id}</td>
-                  <td className="max-w-[280px] px-3 py-2">
-                    <p className="line-clamp-2">{item.subject}</p>
-                  </td>
-                  <td className="px-3 py-2">{item.projectName || "-"}</td>
-                  <td className="px-3 py-2">
-                    <Badge variant="outline">{item.statusName || "-"}</Badge>
-                  </td>
-                  <td className="px-3 py-2">{item.assigneeName || "未指派"}</td>
-                  <td className="px-3 py-2">{item.updatedOn || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {!issues.length && !isFetching ? (
-            <div className="px-4 py-6 text-center text-sm text-muted-foreground">暂无数据</div>
-          ) : null}
-        </div>
-      </CardContent>
-    </Card>
+                  #{item.id}
+                </span>
+                <span
+                  className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-tighter ${priorityMeta.className}`}
+                >
+                  {priorityMeta.label}
+                </span>
+              </div>
+              
+              <h3
+                className={`mb-2 text-xs font-semibold leading-snug ${
+                  isSelected ? "text-on-surface" : "text-on-surface"
+                }`}
+              >
+                {item.subject}
+              </h3>
+              
+              <div className="flex items-center justify-between text-[10px] text-on-surface-variant">
+                <div className="flex gap-3">
+                  <span className={`flex items-center gap-1 ${trackerMeta.className}`}>
+                    <MaterialSymbol name={trackerMeta.icon} className="text-[12px]" opticalSize={20} />
+                    {item.trackerName || "任务"}
+                  </span>
+                  {item.updatedOn ? (
+                    <span className="flex items-center gap-1">
+                      <MaterialSymbol name="history" className="text-[12px]" opticalSize={20} />
+                      {item.updatedOn.slice(0, 10)}
+                    </span>
+                  ) : null}
+                </div>
+                
+                <button 
+                  className={`transition-opacity text-primary ${isSelected ? "opacity-100 font-medium" : "opacity-0 group-hover:opacity-100"}`}
+                >
+                  {isSelected ? "查看详情" : "View"}
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
