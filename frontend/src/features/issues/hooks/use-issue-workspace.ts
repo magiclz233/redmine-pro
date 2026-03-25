@@ -2,18 +2,81 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import {
-  assignIssue,
   getCurrentUser,
   getIssueDetail,
+  getIssueEditMeta,
   getIssueStatuses,
   getMyIssues,
-  getProjectMembers,
-  updateIssueStatus,
+  updateIssue,
 } from "@/services/redmine";
 import { useAppStore } from "@/stores/use-app-store";
+import type { main } from "../../../../wailsjs/go/models";
+
+type EditFieldKey =
+  | "subject"
+  | "description"
+  | "trackerId"
+  | "statusId"
+  | "priorityId"
+  | "assigneeId"
+  | "categoryId"
+  | "fixedVersionId"
+  | "parentIssueId"
+  | "startDate"
+  | "dueDate"
+  | "estimatedHours"
+  | "doneRatio"
+  | "notes";
+
+interface IssueEditFormState {
+  subject: string;
+  description: string;
+  trackerId: string;
+  statusId: string;
+  priorityId: string;
+  assigneeId: string;
+  categoryId: string;
+  fixedVersionId: string;
+  parentIssueId: string;
+  startDate: string;
+  dueDate: string;
+  estimatedHours: string;
+  doneRatio: string;
+  notes: string;
+  customFieldValues: Record<string, string[]>;
+}
+
+function buildIssueEditForm(meta: main.RedmineIssueEditMeta): IssueEditFormState {
+  return {
+    subject: meta.subject ?? "",
+    description: meta.description ?? "",
+    trackerId: meta.trackerId > 0 ? String(meta.trackerId) : "",
+    statusId: meta.statusId > 0 ? String(meta.statusId) : "",
+    priorityId: meta.priorityId > 0 ? String(meta.priorityId) : "",
+    assigneeId: meta.assigneeId > 0 ? String(meta.assigneeId) : "",
+    categoryId: meta.categoryId > 0 ? String(meta.categoryId) : "",
+    fixedVersionId: meta.fixedVersionId > 0 ? String(meta.fixedVersionId) : "",
+    parentIssueId: meta.parentIssueId > 0 ? String(meta.parentIssueId) : "",
+    startDate: meta.startDate ?? "",
+    dueDate: meta.dueDate ?? "",
+    estimatedHours: meta.estimatedHours ?? "",
+    doneRatio: String(meta.doneRatio ?? 0),
+    notes: "",
+    customFieldValues: Object.fromEntries(
+      (meta.customFields ?? []).map((field) => [
+        String(field.id),
+        Array.isArray(field.values) && field.values.length
+          ? [...field.values]
+          : field.value
+            ? [field.value]
+            : [],
+      ])
+    ),
+  };
+}
 
 // useIssueWorkspace 统一承载任务中心工作区的数据访问与页面状态。
-// 这样做可以把页面组件从查询、筛选、状态流转等细节中剥离出来，便于后续继续拆分为更多业务组件。
+// 这样做可以把页面组件从查询、筛选、编辑表单和统一提交逻辑中剥离出来。
 export function useIssueWorkspace() {
   const redmineBaseUrl = useAppStore((state) => state.redmineBaseUrl);
   const apiKey = useAppStore((state) => state.apiKey);
@@ -21,10 +84,24 @@ export function useIssueWorkspace() {
   const setStatusFilter = useAppStore((state) => state.setStatusFilter);
 
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
-  const [statusToUpdate, setStatusToUpdate] = useState("");
-  const [assigneeId, setAssigneeId] = useState("");
-  const [notes, setNotes] = useState("");
   const [actionMessage, setActionMessage] = useState("");
+  const [editForm, setEditForm] = useState<IssueEditFormState>({
+    subject: "",
+    description: "",
+    trackerId: "",
+    statusId: "",
+    priorityId: "",
+    assigneeId: "",
+    categoryId: "",
+    fixedVersionId: "",
+    parentIssueId: "",
+    startDate: "",
+    dueDate: "",
+    estimatedHours: "",
+    doneRatio: "0",
+    notes: "",
+    customFieldValues: {},
+  });
 
   const credentials = useMemo(
     () => ({ baseUrl: redmineBaseUrl, apiKey }),
@@ -72,66 +149,60 @@ export function useIssueWorkspace() {
     enabled: hasCredentials && selectedIssueId !== null,
   });
 
-  const projectId = issueDetailQuery.data?.issue.projectId ?? 0;
-  const projectMembersQuery = useQuery({
-    queryKey: ["project-members", redmineBaseUrl, apiKey, projectId],
-    queryFn: () => getProjectMembers(credentials, projectId),
-    enabled: hasCredentials && projectId > 0,
-    staleTime: 60_000,
+  const issueEditMetaQuery = useQuery({
+    queryKey: ["issue-edit-meta", redmineBaseUrl, apiKey, selectedIssueId],
+    queryFn: () => getIssueEditMeta(credentials, selectedIssueId as number),
+    enabled: hasCredentials && selectedIssueId !== null,
   });
-
-  const availableStatuses =
-    issueDetailQuery.data?.allowedStatuses?.length
-      ? issueDetailQuery.data.allowedStatuses
-      : statusListQuery.data ?? [];
 
   useEffect(() => {
-    const detail = issueDetailQuery.data;
-    if (!detail) {
+    const meta = issueEditMetaQuery.data;
+    if (!meta) {
       return;
     }
+    setEditForm(buildIssueEditForm(meta));
+  }, [issueEditMetaQuery.data, selectedIssueId]);
 
-    setStatusToUpdate(String(detail.issue.statusId || ""));
-    setAssigneeId(detail.issue.assigneeId > 0 ? String(detail.issue.assigneeId) : "");
-  }, [issueDetailQuery.data]);
-
-  const updateStatusMutation = useMutation({
+  const saveIssueMutation = useMutation({
     mutationFn: async () => {
-      const issueId = selectedIssueId;
-      const nextStatusId = Number(statusToUpdate);
-
-      if (!issueId) {
+      if (!selectedIssueId) {
         throw new Error("请先选择问题");
       }
-      if (!nextStatusId) {
-        throw new Error("请选择状态");
+
+      const editMeta = issueEditMetaQuery.data;
+      if (!editMeta) {
+        throw new Error("编辑元数据尚未加载完成");
       }
 
-      return updateIssueStatus(credentials, issueId, nextStatusId, notes);
+      return updateIssue(credentials, {
+        issueId: selectedIssueId,
+        subject: editForm.subject,
+        description: editForm.description,
+        trackerId: editForm.trackerId,
+        statusId: editForm.statusId,
+        priorityId: editForm.priorityId,
+        assigneeId: editForm.assigneeId,
+        categoryId: editForm.categoryId,
+        fixedVersionId: editForm.fixedVersionId,
+        parentIssueId: editForm.parentIssueId,
+        startDate: editForm.startDate,
+        dueDate: editForm.dueDate,
+        estimatedHours: editForm.estimatedHours,
+        doneRatio: editForm.doneRatio,
+        notes: editForm.notes,
+        customFields: (editMeta.customFields ?? []).map((field) => ({
+          id: field.id,
+          values: editForm.customFieldValues[String(field.id)] ?? [],
+        })),
+      });
     },
     onSuccess: async (message) => {
       setActionMessage(message);
-      await Promise.all([issuesQuery.refetch(), issueDetailQuery.refetch()]);
-    },
-  });
-
-  const assignIssueMutation = useMutation({
-    mutationFn: async () => {
-      const issueId = selectedIssueId;
-      const nextAssigneeId = Number(assigneeId);
-
-      if (!issueId) {
-        throw new Error("请先选择问题");
-      }
-      if (!nextAssigneeId) {
-        throw new Error("请先选择或输入指派人 ID");
-      }
-
-      return assignIssue(credentials, issueId, nextAssigneeId, notes);
-    },
-    onSuccess: async (message) => {
-      setActionMessage(message);
-      await Promise.all([issuesQuery.refetch(), issueDetailQuery.refetch()]);
+      await Promise.all([
+        issuesQuery.refetch(),
+        issueDetailQuery.refetch(),
+        issueEditMetaQuery.refetch(),
+      ]);
     },
   });
 
@@ -142,6 +213,7 @@ export function useIssueWorkspace() {
       statusListQuery.refetch(),
       issuesQuery.refetch(),
       issueDetailQuery.refetch(),
+      issueEditMetaQuery.refetch(),
     ]);
   };
 
@@ -151,13 +223,40 @@ export function useIssueWorkspace() {
     setActionMessage("");
   };
 
-  const onStatusToUpdateChange = (value: string | null) => {
-    setStatusToUpdate(value ?? "");
+  const onEditFieldChange = (field: EditFieldKey, value: string) => {
+    setEditForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
   };
 
-  const onAssigneeChange = (value: string | null) => {
-    setAssigneeId(value ?? "");
+  const onCustomFieldValueChange = (fieldId: number, value: string) => {
+    setEditForm((current) => ({
+      ...current,
+      customFieldValues: {
+        ...current.customFieldValues,
+        [String(fieldId)]: value.trim() ? [value] : [],
+      },
+    }));
   };
+
+  const onCustomFieldValuesChange = (fieldId: number, values: string[]) => {
+    setEditForm((current) => ({
+      ...current,
+      customFieldValues: {
+        ...current.customFieldValues,
+        [String(fieldId)]: values,
+      },
+    }));
+  };
+
+  const onSaveIssue = async () => {
+    setActionMessage("");
+    await saveIssueMutation.mutateAsync();
+  };
+
+  const getCustomFieldValues = (fieldId: number) =>
+    editForm.customFieldValues[String(fieldId)] ?? [];
 
   const errorMessage =
     currentUserQuery.error instanceof Error
@@ -168,40 +267,37 @@ export function useIssueWorkspace() {
           ? issuesQuery.error.message
           : issueDetailQuery.error instanceof Error
             ? issueDetailQuery.error.message
-            : updateStatusMutation.error instanceof Error
-              ? updateStatusMutation.error.message
-              : assignIssueMutation.error instanceof Error
-                ? assignIssueMutation.error.message
+            : issueEditMetaQuery.error instanceof Error
+              ? issueEditMetaQuery.error.message
+              : saveIssueMutation.error instanceof Error
+                ? saveIssueMutation.error.message
                 : "";
 
   return {
     redmineBaseUrl,
     apiKey,
     selectedIssueId,
-    statusToUpdate,
-    assigneeId,
-    notes,
     actionMessage,
     credentials,
     hasCredentials,
     issues,
-    availableStatuses,
+    editForm,
     currentUserQuery,
     statusListQuery,
     issuesQuery,
     issueDetailQuery,
-    projectMembersQuery,
-    updateStatusMutation,
-    assignIssueMutation,
+    issueEditMetaQuery,
+    saveIssueMutation,
     errorMessage,
-    setNotes,
     setActionMessage,
     setSelectedIssueId,
-    setAssigneeId,
     onRefresh,
     onStatusFilterChange,
-    onStatusToUpdateChange,
-    onAssigneeChange,
+    onEditFieldChange,
+    onCustomFieldValueChange,
+    onCustomFieldValuesChange,
+    onSaveIssue,
+    getCustomFieldValues,
     statusFilter,
   };
 }
