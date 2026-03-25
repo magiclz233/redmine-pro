@@ -43,9 +43,104 @@ type RedmineUserOption struct {
 	Mail  string `json:"mail"`
 }
 
+// RedmineIssueField 是问题详情页统一展示的字段结构。
+type RedmineIssueField struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+// RedmineSelectOption 是通用下拉项 DTO。
+type RedmineSelectOption struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+// RedmineFieldOption 是自定义字段的字符串型选项 DTO。
+type RedmineFieldOption struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
+// RedmineAttachment 描述问题的附件信息。
+type RedmineAttachment struct {
+	ID          int    `json:"id"`
+	Filename    string `json:"filename"`
+	Filesize    int    `json:"filesize"`
+	ContentType string `json:"contentType"`
+	Description string `json:"description"`
+	ContentURL  string `json:"contentUrl"`
+	AuthorName  string `json:"authorName"`
+	CreatedOn   string `json:"createdOn"`
+}
+
+// RedmineIssueCustomFieldMeta 是问题编辑页的自定义字段元数据。
+type RedmineIssueCustomFieldMeta struct {
+	ID             int                  `json:"id"`
+	Name           string               `json:"name"`
+	FieldFormat    string               `json:"fieldFormat"`
+	Multiple       bool                 `json:"multiple"`
+	Required       bool                 `json:"required"`
+	Value          string               `json:"value"`
+	Values         []string             `json:"values"`
+	PossibleValues []RedmineFieldOption `json:"possibleValues"`
+}
+
+// RedmineIssueEditMeta 是问题编辑抽屉所需的完整元数据。
+type RedmineIssueEditMeta struct {
+	Subject        string                        `json:"subject"`
+	Description    string                        `json:"description"`
+	TrackerID      int                           `json:"trackerId"`
+	StatusID       int                           `json:"statusId"`
+	PriorityID     int                           `json:"priorityId"`
+	AssigneeID     int                           `json:"assigneeId"`
+	CategoryID     int                           `json:"categoryId"`
+	FixedVersionID int                           `json:"fixedVersionId"`
+	ParentIssueID  int                           `json:"parentIssueId"`
+	StartDate      string                        `json:"startDate"`
+	DueDate        string                        `json:"dueDate"`
+	EstimatedHours string                        `json:"estimatedHours"`
+	DoneRatio      int                           `json:"doneRatio"`
+	Trackers       []RedmineSelectOption         `json:"trackers"`
+	Statuses       []RedmineSelectOption         `json:"statuses"`
+	Priorities     []RedmineSelectOption         `json:"priorities"`
+	Assignees      []RedmineUserOption           `json:"assignees"`
+	Categories     []RedmineSelectOption         `json:"categories"`
+	Versions       []RedmineSelectOption         `json:"versions"`
+	CustomFields   []RedmineIssueCustomFieldMeta `json:"customFields"`
+}
+
+// RedmineIssueCustomFieldUpdate 是前端提交的自定义字段更新输入。
+type RedmineIssueCustomFieldUpdate struct {
+	ID     int      `json:"id"`
+	Values []string `json:"values"`
+}
+
+// RedmineIssueUpdatePayload 是前端统一提交的问题更新载荷。
+type RedmineIssueUpdatePayload struct {
+	IssueID        int                             `json:"issueId"`
+	Subject        string                          `json:"subject"`
+	Description    string                          `json:"description"`
+	TrackerID      string                          `json:"trackerId"`
+	StatusID       string                          `json:"statusId"`
+	PriorityID     string                          `json:"priorityId"`
+	AssigneeID     string                          `json:"assigneeId"`
+	CategoryID     string                          `json:"categoryId"`
+	FixedVersionID string                          `json:"fixedVersionId"`
+	ParentIssueID  string                          `json:"parentIssueId"`
+	StartDate      string                          `json:"startDate"`
+	DueDate        string                          `json:"dueDate"`
+	EstimatedHours string                          `json:"estimatedHours"`
+	DoneRatio      string                          `json:"doneRatio"`
+	Notes          string                          `json:"notes"`
+	CustomFields   []RedmineIssueCustomFieldUpdate `json:"customFields"`
+}
+
 // RedmineIssueDetail 是详情页展示所需的组合 DTO。
 type RedmineIssueDetail struct {
 	Issue           RedmineIssueSummary   `json:"issue"`
 	Description     string                `json:"description"`
+	StandardFields  []RedmineIssueField   `json:"standardFields"`
+	CustomFields    []RedmineIssueField   `json:"customFields"`
 	AllowedStatuses []RedmineStatusOption `json:"allowedStatuses"`
+	Attachments     []RedmineAttachment   `json:"attachments"`
 }
