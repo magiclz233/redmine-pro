@@ -29,6 +29,15 @@ type RedmineIssueList struct {
 	Limit      int                   `json:"limit"`
 }
 
+// RedmineIssueFilter 包含问题的多维筛选条件。
+type RedmineIssueFilter struct {
+	StatusID       string `json:"statusId"`
+	AssigneeID     string `json:"assigneeId"`
+	AuthorID       string `json:"authorId"`
+	FixedVersionID string `json:"fixedVersionId"`
+	ProjectID      string `json:"projectId"`
+}
+
 // RedmineStatusOption 用于状态下拉和 allowed_statuses 展示。
 type RedmineStatusOption struct {
 	ID   int    `json:"id"`
