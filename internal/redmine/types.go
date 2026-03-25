@@ -142,6 +142,15 @@ type IssueUpdateInput struct {
 	CustomFields   []IssueCustomFieldUpdate
 }
 
+// RedmineIssueFilter 内部使用的筛选器。
+type RedmineIssueFilter struct {
+	StatusID       string
+	AssignedToID   string
+	AuthorID       string
+	FixedVersionID string
+	ProjectID      string
+}
+
 // IssueDetail 是问题详情场景的内部模型。
 type IssueDetail struct {
 	Issue           IssueSummary
