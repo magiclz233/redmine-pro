@@ -33,33 +33,99 @@ interface IssuesListPanelProps {
   totalCount: number;
   issues: main.RedmineIssueSummary[];
   statusFilter: string;
+  assigneeFilter: string;
+  authorFilter: string;
+  versionFilter: string;
+  projectFilter: string;
   statuses: main.RedmineStatusOption[];
   selectedIssueId: number | null;
   isFetching: boolean;
   onStatusFilterChange: (value: string | null) => void;
+  onAssigneeFilterChange: (value: string) => void;
+  onAuthorFilterChange: (value: string) => void;
+  onVersionFilterChange: (value: string) => void;
+  onProjectFilterChange: (value: string) => void;
   onIssueSelect: (issueId: number) => void;
 }
 
 export function IssuesListPanel(props: IssuesListPanelProps) {
-  const { totalCount, issues, selectedIssueId, isFetching, onIssueSelect } = props;
+  const {
+    totalCount,
+    issues,
+    statusFilter,
+    assigneeFilter,
+    authorFilter,
+    versionFilter,
+    projectFilter,
+    statuses,
+    selectedIssueId,
+    isFetching,
+    onStatusFilterChange,
+    onAssigneeFilterChange,
+    onAuthorFilterChange,
+    onVersionFilterChange,
+    onProjectFilterChange,
+    onIssueSelect,
+  } = props;
 
   return (
     <section className="flex w-[420px] flex-col border-r border-outline-variant/10 bg-surface z-0 relative">
-      <div className="flex items-center justify-between bg-surface-container-low/30 p-4">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-on-surface">
-          <span className="h-4 w-1 rounded-full bg-primary"></span>
-          指派给我
-          <span className="rounded bg-surface-container px-1.5 text-[10px] font-normal text-on-surface-variant">
-            {totalCount}
-          </span>
-        </h2>
-        <div className="flex gap-1">
-          <button className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high">
-            <MaterialSymbol name="filter_list" className="text-sm" opticalSize={20} />
-          </button>
-          <button className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high">
-            <MaterialSymbol name="sort" className="text-sm" opticalSize={20} />
-          </button>
+      <div className="flex flex-col gap-2 bg-surface-container-low/30 px-4 pb-3">
+        <div className="flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-on-surface">
+            <span className="h-4 w-1 rounded-full bg-primary"></span>
+            问题列表
+            <span className="rounded bg-surface-container px-1.5 text-[10px] font-normal text-on-surface-variant">
+              {totalCount}
+            </span>
+          </h2>
+          <div className="flex gap-1">
+            <button className="rounded p-1 text-on-surface-variant transition-colors hover:bg-surface-container-high">
+              <MaterialSymbol name="sort" className="text-sm" opticalSize={20} />
+            </button>
+            <button 
+              onClick={() => {
+                onStatusFilterChange("open");
+                props.onAssigneeFilterChange("");
+                props.onAuthorFilterChange("");
+                props.onVersionFilterChange("");
+              }}
+              className="rounded p-1 text-primary transition-colors hover:bg-primary/10"
+              title="重置筛选"
+            >
+              <MaterialSymbol name="filter_alt_off" className="text-sm" opticalSize={20} />
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <select 
+            value={statusFilter} 
+            onChange={(e) => onStatusFilterChange(e.target.value)}
+            className="rounded border border-outline-variant/20 bg-surface-container-high px-2 py-1 text-[11px] text-on-surface outline-none focus:border-primary/50"
+          >
+            <option value="open">未关闭 (默认)</option>
+            <option value="*">全部状态</option>
+            {statuses.map(s => (
+              <option key={s.id} value={String(s.id)}>{s.name}</option>
+            ))}
+          </select>
+
+          <select 
+            value={props.assigneeFilter} 
+            onChange={(e) => props.onAssigneeFilterChange(e.target.value)}
+            className="rounded border border-outline-variant/20 bg-surface-container-high px-2 py-1 text-[11px] text-on-surface outline-none focus:border-primary/50"
+          >
+            <option value="">指派人: 全部</option>
+            <option value="me">指派给我</option>
+            <option value="none">未指派</option>
+          </select>
+
+          <input 
+            type="text"
+            placeholder="指派 ID/作者 ID..."
+            className="col-span-2 hidden" // 暂时隐藏，后续改进为更好的选择器
+          />
         </div>
       </div>
 
