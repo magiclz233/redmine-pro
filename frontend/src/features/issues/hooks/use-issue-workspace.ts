@@ -80,8 +80,18 @@ function buildIssueEditForm(meta: main.RedmineIssueEditMeta): IssueEditFormState
 export function useIssueWorkspace() {
   const redmineBaseUrl = useAppStore((state) => state.redmineBaseUrl);
   const apiKey = useAppStore((state) => state.apiKey);
+  
+  // 基础筛选器状态
   const statusFilter = useAppStore((state) => state.statusFilter);
   const setStatusFilter = useAppStore((state) => state.setStatusFilter);
+  const [assigneeFilter, setAssigneeFilter] = useState<string>("");
+  const [authorFilter, setAuthorFilter] = useState<string>("");
+  const [versionFilter, setVersionFilter] = useState<string>("");
+  const [projectFilter, setProjectFilter] = useState<string>("");
+
+  // 画廊预览状态
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const onPreviewIndexChange = (index: number | null) => setPreviewIndex(index);
 
   const [selectedIssueId, setSelectedIssueId] = useState<number | null>(null);
   const [actionMessage, setActionMessage] = useState("");
@@ -124,8 +134,16 @@ export function useIssueWorkspace() {
   });
 
   const issuesQuery = useQuery({
-    queryKey: ["my-issues", redmineBaseUrl, apiKey, statusFilter],
-    queryFn: () => getMyIssues(credentials, { statusId: statusFilter, limit: 50, offset: 0 }),
+    queryKey: ["my-issues", redmineBaseUrl, apiKey, statusFilter, assigneeFilter, authorFilter, versionFilter, projectFilter],
+    queryFn: () => getMyIssues(credentials, { 
+      statusId: statusFilter, 
+      assigneeId: assigneeFilter,
+      authorId: authorFilter,
+      versionId: versionFilter,
+      projectId: projectFilter,
+      limit: 50, 
+      offset: 0 
+    }),
     enabled: hasCredentials,
     staleTime: 30_000,
   });
@@ -258,6 +276,24 @@ export function useIssueWorkspace() {
   const getCustomFieldValues = (fieldId: number) =>
     editForm.customFieldValues[String(fieldId)] ?? [];
 
+  const mediaAttachments = useMemo(() => {
+    const issueDetail = issueDetailQuery.data;
+    if (!issueDetail?.attachments) return [];
+    return issueDetail.attachments.filter(
+      (a) => a.contentType?.startsWith("image/") || a.contentType?.startsWith("video/")
+    );
+  }, [issueDetailQuery.data?.attachments]);
+
+  const onNextMedia = () => {
+    if (previewIndex === null || mediaAttachments.length === 0) return;
+    setPreviewIndex((previewIndex + 1) % mediaAttachments.length);
+  };
+
+  const onPrevMedia = () => {
+    if (previewIndex === null || mediaAttachments.length === 0) return;
+    setPreviewIndex((previewIndex - 1 + mediaAttachments.length) % mediaAttachments.length);
+  };
+
   const errorMessage =
     currentUserQuery.error instanceof Error
       ? currentUserQuery.error.message
@@ -299,5 +335,18 @@ export function useIssueWorkspace() {
     onSaveIssue,
     getCustomFieldValues,
     statusFilter,
+    assigneeFilter,
+    authorFilter,
+    versionFilter,
+    projectFilter,
+    setAssigneeFilter,
+    setAuthorFilter,
+    setVersionFilter,
+    setProjectFilter,
+    previewIndex,
+    onPreviewIndexChange,
+    mediaAttachments,
+    onNextMedia,
+    onPrevMedia,
   };
 }

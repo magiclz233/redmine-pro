@@ -60,7 +60,7 @@ export function IssueWorkspacePage() {
         isSavePending={workspace.saveIssueMutation.isPending}
         previewIndex={workspace.previewIndex}
         mediaAttachments={workspace.mediaAttachments}
-        onPreviewIndexChange={workspace.setPreviewIndex}
+        onPreviewIndexChange={workspace.onPreviewIndexChange}
         onNextMedia={workspace.onNextMedia}
         onPrevMedia={workspace.onPrevMedia}
         onEditFieldChange={workspace.onEditFieldChange}
