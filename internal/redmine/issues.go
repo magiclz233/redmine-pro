@@ -9,18 +9,37 @@ import (
 	"strings"
 )
 
-// GetMyIssues 获取“指派给我”的问题列表。
-func (c *Client) GetMyIssues(statusID string, limit, offset int) (*IssueList, error) {
+// GetMyIssues 获取符合筛选条件的问题列表。
+func (c *Client) GetMyIssues(filter RedmineIssueFilter, limit, offset int) (*IssueList, error) {
 	limit, offset = sanitizePage(limit, offset)
 
-	filterStatus := strings.TrimSpace(statusID)
-	if filterStatus == "" {
-		filterStatus = "*"
+	query := url.Values{}
+
+	// 处理状态
+	statusID := strings.TrimSpace(filter.StatusID)
+	if statusID == "" {
+		statusID = "open" // 默认只看开启的
+	}
+	query.Set("status_id", statusID)
+
+	// 处理指派人：如果未指定，默认指派给我
+	assigneeID := strings.TrimSpace(filter.AssignedToID)
+	if assigneeID == "" {
+		assigneeID = "me"
+	}
+	query.Set("assigned_to_id", assigneeID)
+
+	// 处理其他过滤项
+	if filter.AuthorID != "" {
+		query.Set("author_id", filter.AuthorID)
+	}
+	if filter.FixedVersionID != "" {
+		query.Set("fixed_version_id", filter.FixedVersionID)
+	}
+	if filter.ProjectID != "" {
+		query.Set("project_id", filter.ProjectID)
 	}
 
-	query := url.Values{}
-	query.Set("assigned_to_id", "me")
-	query.Set("status_id", filterStatus)
 	query.Set("sort", "updated_on:desc")
 	query.Set("limit", strconv.Itoa(limit))
 	query.Set("offset", strconv.Itoa(offset))
