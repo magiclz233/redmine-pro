@@ -1,6 +1,6 @@
 # Redmine Pro 开发与架构主规划文档
 
-更新时间：2026-03-24
+更新时间：2026-03-25
 
 ## 1. 文档定位
 
@@ -30,7 +30,7 @@
 
 ## 3. 当前代码基线
 
-截至 2026-03-24，仓库内已有以下基础：
+截至 2026-03-25，仓库内已有以下基础：
 
 - [x] Wails 项目已初始化
 - [x] 前端已接入 `React + TypeScript + Tailwind CSS + shadcn/ui + Base UI + TanStack Query + Zustand`
@@ -41,7 +41,9 @@
 - `GetIssueStatuses`
 - `GetMyIssues`
 - `GetIssueDetail`
+- `GetIssueEditMeta`
 - `GetProjectMembers`
+- `UpdateIssue`
 - `UpdateIssueStatus`
 - `AssignIssue`
 - [x] 前端已接入基础状态存储与 Wails 绑定调用
@@ -426,12 +428,12 @@ internal/
 - [ ] 按 `stitch_3.html` 完成任务中心整体 UI
 - [ ] 完成问题列表筛选条
 - [ ] 完成问题列表卡片或表格视图
-- [ ] 完成问题详情主体区域
+- [x] 完成问题详情主体区域
 - [ ] 完成问题历史记录与评论区域
-- [ ] 完成问题右侧 Quick Edit 区
-- [ ] 完成状态更新
-- [ ] 完成指派更新
-- [ ] 完成目标版本、优先级、跟踪类型编辑
+- [x] 完成问题右侧 Quick Edit 区
+- [x] 完成状态更新
+- [x] 完成指派更新
+- [x] 完成目标版本、优先级、跟踪类型编辑
 - [ ] 完成可搜索成员选择器
 - [ ] 完成工时登记入口
 - [ ] 完成一键完成、一键转测试、一键重开动作
@@ -539,6 +541,8 @@ internal/
 | 2026-03-24 | 状态组件 | 已完成 | 已抽取统一的 LoadingState / EmptyState / ErrorState，并替换任务中心中的列表空态、详情空态、详情加载态与全局错误态 |
 | 2026-03-24 | 连接页首版 | 已完成 | 已按 stitch_1.html 落地连接页 UI，补齐 URL / API Key 表单校验，并基于 GetCurrentUser 实现连接测试与错误提示 |
 | 2026-03-24 | 启动分流与实例切换 | 已完成 | 应用启动时先判断并校验当前配置；无配置时直接显示 stitch_1，配置通过后进入主壳层；设置页已支持保存多个实例、切换当前实例与删除实例 |
+| 2026-03-25 | 问题详情字段扩展 | 已完成 | GetIssueDetail 已补齐标准字段与自定义字段透出，任务详情页改为完整展示 Redmine 参数，不再写死六个字段 |
+| 2026-03-25 | 问题统一编辑表单 | 已完成 | 已新增 GetIssueEditMeta 与统一 UpdateIssue 提交，编辑抽屉改为完整表单；标准字段显示名称、可选字段支持清空，带候选项的自定义字段优先直接选择；自定义字段候选项仍受 Redmine API 权限限制 |
 
 ## 13. 下一步明确建议
 
