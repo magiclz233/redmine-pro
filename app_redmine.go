@@ -42,14 +42,22 @@ func (a *App) GetIssueStatuses(baseURL, apiKey string) ([]RedmineStatusOption, e
 	return result, nil
 }
 
-// GetMyIssues 获取指派给当前用户的问题列表。
-func (a *App) GetMyIssues(baseURL, apiKey, statusID string, limit, offset int) (*RedmineIssueList, error) {
+// GetMyIssues 获取符合筛选条件的问题列表。
+func (a *App) GetMyIssues(baseURL, apiKey string, filter RedmineIssueFilter, limit, offset int) (*RedmineIssueList, error) {
 	client, err := redmine.NewClient(baseURL, apiKey)
 	if err != nil {
 		return nil, err
 	}
 
-	issueList, err := client.GetMyIssues(statusID, limit, offset)
+	internalFilter := redmine.RedmineIssueFilter{
+		StatusID:       filter.StatusID,
+		AssignedToID:   filter.AssigneeID,
+		AuthorID:       filter.AuthorID,
+		FixedVersionID: filter.FixedVersionID,
+		ProjectID:      filter.ProjectID,
+	}
+
+	issueList, err := client.GetMyIssues(internalFilter, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -177,6 +185,26 @@ func (a *App) GetProjectMembers(baseURL, apiKey string, projectID int) ([]Redmin
 	result := make([]RedmineUserOption, 0, len(members))
 	for _, item := range members {
 		result = append(result, toUserOption(item))
+	}
+
+	return result, nil
+}
+
+// GetProjectVersions 获取项目版本列表，供筛选和编辑选择。
+func (a *App) GetProjectVersions(baseURL, apiKey string, projectID int) ([]RedmineSelectOption, error) {
+	client, err := redmine.NewClient(baseURL, apiKey)
+	if err != nil {
+		return nil, err
+	}
+
+	versions, err := client.GetProjectVersions(projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]RedmineSelectOption, 0, len(versions))
+	for _, item := range versions {
+		result = append(result, toSelectOption(item))
 	}
 
 	return result, nil
