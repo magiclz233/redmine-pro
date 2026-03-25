@@ -1,9 +1,10 @@
-import { useState, type ReactNode, useMemo } from "react";
+import { useState, type ReactNode, useMemo, useEffect } from "react";
 import { MaterialSymbol } from "@/components/material-symbol";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppStore } from "@/stores/use-app-store";
 import type { main } from "../../../../wailsjs/go/models";
@@ -34,6 +35,11 @@ interface IssueDetailPanelProps {
   isDetailFetching: boolean;
   isEditMetaFetching: boolean;
   isSavePending: boolean;
+  previewIndex: number | null;
+  mediaAttachments: main.RedmineAttachment[];
+  onPreviewIndexChange: (index: number | null) => void;
+  onNextMedia: () => void;
+  onPrevMedia: () => void;
   onEditFieldChange: (field: keyof IssueEditFormState, value: string) => void;
   onCustomFieldValueChange: (fieldId: number, value: string) => void;
   onCustomFieldValuesChange: (fieldId: number, values: string[]) => void;
@@ -115,10 +121,14 @@ function DescriptionRenderer({ text, apiKey }: { text: string; apiKey: string })
 
 function AttachmentSection({
   attachments,
+  mediaAttachments,
   apiKey,
+  onPreviewIndexChange,
 }: {
   attachments?: main.RedmineAttachment[];
+  mediaAttachments: main.RedmineAttachment[];
   apiKey: string;
+  onPreviewIndexChange: (index: number) => void;
 }) {
   if (!attachments || attachments.length === 0) return null;
 
@@ -130,59 +140,138 @@ function AttachmentSection({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  return (
-    <section className="space-y-6">
-      <div className="flex items-center gap-3 border-b border-outline-variant/10 pb-3">
-        <MaterialSymbol name="attachment" className="text-primary" opticalSize={20} />
-        <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">附件列表 ({attachments.length})</h3>
-      </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {attachments.map((file) => {
-          const isImage = file.contentType?.startsWith("image/");
-          const downloadUrl = `${file.contentUrl}${file.contentUrl.includes("?") ? "&" : "?"}key=${apiKey}`;
+  const getUrl = (url: string) => `${url}${url.includes("?") ? "&" : "?"}key=${apiKey}`;
 
-          return (
-            <div
-              key={file.id}
-              className="group relative flex flex-col overflow-hidden rounded-2xl border border-outline-variant/10 bg-surface-container-high/40 p-4 transition-all hover:border-primary/30 hover:bg-surface-container-high/60"
-            >
-              <div className="flex flex-1 items-start gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-container-highest text-on-surface-variant">
-                  <MaterialSymbol name={isImage ? "image" : "description"} opticalSize={24} />
+  const images = attachments.filter((f) => f.contentType?.startsWith("image/"));
+  const videos = attachments.filter((f) => f.contentType?.startsWith("video/"));
+  const others = attachments.filter((f) => !f.contentType?.startsWith("image/") && !f.contentType?.startsWith("video/"));
+
+  return (
+    <section className="space-y-12">
+      <div className="flex items-center gap-3 border-b border-outline-variant/10 pb-3">
+        <MaterialSymbol name="attachment" className="text-secondary" opticalSize={20} />
+        <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">附件资源 ({attachments.length})</h3>
+      </div>
+
+      {/* 图片墙 */}
+      {images.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
+            <MaterialSymbol name="image" opticalSize={20} />
+            图片附件 ({images.length})
+          </h4>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {images.map((file) => {
+              const mediaIndex = mediaAttachments.findIndex((ma) => ma.id === file.id);
+              return (
+                <div
+                  key={file.id}
+                  onClick={() => mediaIndex !== -1 && onPreviewIndexChange(mediaIndex)}
+                  className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-outline-variant/5 bg-surface-container-high/20 transition-all hover:border-primary/20"
+                >
+                  <div className="aspect-auto min-h-[120px] overflow-hidden">
+                    <img
+                      src={getUrl(file.contentUrl)}
+                      alt={file.filename}
+                      className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.02]"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+                    <div className="flex items-end justify-between gap-2" onClick={(e) => e.stopPropagation()}>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-bold text-white">{file.filename}</p>
+                        <p className="mt-1 text-[10px] text-white/60">{formatSize(file.filesize)}</p>
+                      </div>
+                      <a
+                        href={getUrl(file.contentUrl)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black"
+                      >
+                        <MaterialSymbol name="download" opticalSize={20} />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 视频列表 */}
+      {videos.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
+            <MaterialSymbol name="movie" opticalSize={20} />
+            视频附件 ({videos.length})
+          </h4>
+          <div className="space-y-6">
+            {videos.map((file) => {
+              const mediaIndex = mediaAttachments.findIndex((ma) => ma.id === file.id);
+              return (
+                <div key={file.id} className="overflow-hidden rounded-2xl border border-outline-variant/10 bg-black/40 shadow-lg">
+                  <div className="flex items-center justify-between border-b border-white/5 bg-white/5 px-4 py-2">
+                    <span className="truncate text-xs font-medium text-white/80">{file.filename}</span>
+                    <span className="text-[10px] text-white/40">{formatSize(file.filesize)}</span>
+                  </div>
+                  <div className="relative aspect-video cursor-pointer" onClick={() => mediaIndex !== -1 && onPreviewIndexChange(mediaIndex)}>
+                    <video
+                      src={getUrl(file.contentUrl) + "#t=0.1"}
+                      className="w-full h-full object-contain opacity-80"
+                      preload="metadata"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/10 transition-colors">
+                      <div className="rounded-full bg-white/20 p-4 backdrop-blur-md">
+                        <MaterialSymbol name="play_arrow" className="text-3xl text-white" filled />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* 其他文件：紧凑型列表 */}
+      {others.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
+            <MaterialSymbol name="description" opticalSize={20} />
+            文档资料 ({others.length})
+          </h4>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map((file) => (
+              <div
+                key={file.id}
+                className="flex items-center gap-3 rounded-xl border border-outline-variant/5 bg-surface-container-high/40 p-3 transition-colors hover:bg-surface-container-high/80"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant">
+                  <MaterialSymbol name="description" opticalSize={24} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-bold text-on-surface" title={file.filename}>
+                  <div className="truncate text-[13px] font-bold text-on-surface" title={file.filename}>
                     {file.filename}
                   </div>
-                  <div className="mt-1 flex items-center gap-2 text-[10px] text-on-surface-variant/60">
-                    <span>{formatSize(file.filesize)}</span>
-                    <span>•</span>
-                    <span>{file.authorName || "未知"}</span>
+                  <div className="mt-0.5 text-[10px] text-on-surface-variant/60">
+                    {formatSize(file.filesize)}
                   </div>
                 </div>
-              </div>
-
-              {isImage && (
-                <div className="mt-4 aspect-video overflow-hidden rounded-lg bg-black/20">
-                  <img src={downloadUrl} alt={file.filename} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                </div>
-              )}
-
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-[10px] text-on-surface-variant/40">{formatDateLabel(file.createdOn)}</div>
                 <a
-                  href={downloadUrl}
+                  href={getUrl(file.contentUrl)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-on-primary"
+                  className="flex size-8 items-center justify-center rounded-full text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-colors"
                 >
                   <MaterialSymbol name="download" opticalSize={20} />
                 </a>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -381,6 +470,11 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
     isDetailFetching,
     isEditMetaFetching,
     isSavePending,
+    previewIndex,
+    mediaAttachments,
+    onPreviewIndexChange,
+    onNextMedia,
+    onPrevMedia,
     onEditFieldChange,
     onCustomFieldValueChange,
     onCustomFieldValuesChange,
@@ -388,6 +482,21 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
   } = props;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  
+  // 键盘快捷键支持画廊切换
+  useEffect(() => {
+    if (previewIndex === null) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // 只有在全屏预览打开时响应
+      if (e.key === "ArrowRight") onNextMedia();
+      if (e.key === "ArrowLeft") onPrevMedia();
+      if (e.key === "Escape") onPreviewIndexChange(null);
+    };
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [previewIndex, onNextMedia, onPrevMedia, onPreviewIndexChange]);
 
   const apiKey = useAppStore((state) => state.apiKey);
 
@@ -498,7 +607,12 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
           </section>
 
           {/* Attachments Section */}
-          <AttachmentSection attachments={issueDetail.attachments} apiKey={apiKey} />
+          <AttachmentSection
+            attachments={issueDetail.attachments}
+            mediaAttachments={mediaAttachments}
+            apiKey={apiKey}
+            onPreviewIndexChange={onPreviewIndexChange}
+          />
 
           {/* History / Comments Section */}
           <section className="space-y-8">
@@ -798,6 +912,69 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* 全屏画廊预览 */}
+      <Dialog open={previewIndex !== null} onOpenChange={(open) => !open && onPreviewIndexChange(null)}>
+        <DialogContent className="max-w-none border-none bg-transparent p-0 shadow-none outline-none">
+          <DialogTitle className="sr-only">媒体预览</DialogTitle>
+          <div className="relative flex h-screen w-screen items-center justify-center bg-black/40 backdrop-blur-md">
+            {/* 左右切换按钮 */}
+            {mediaAttachments.length > 1 && (
+              <>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPrevMedia(); }}
+                  className="absolute left-8 z-10 rounded-full bg-black/20 p-4 text-white backdrop-blur hover:bg-black/40 transition-all hover:scale-110"
+                >
+                  <MaterialSymbol name="arrow_back_ios" className="text-3xl" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onNextMedia(); }}
+                  className="absolute right-10 z-10 rounded-full bg-black/20 p-4 text-white backdrop-blur hover:bg-black/40 transition-all hover:scale-110"
+                >
+                  <MaterialSymbol name="arrow_forward_ios" className="text-3xl" />
+                </button>
+              </>
+            )}
+
+            {/* 内容预览 */}
+            <div className="relative flex max-h-[90vh] max-w-[95vw] items-center justify-center p-4">
+              {previewIndex !== null && mediaAttachments[previewIndex] && (
+                mediaAttachments[previewIndex].contentType?.startsWith("video/") ? (
+                  <video 
+                    src={mediaAttachments[previewIndex].contentUrl + (mediaAttachments[previewIndex].contentUrl.includes("?") ? "&" : "?") + "key=" + apiKey}
+                    controls
+                    autoPlay
+                    className="max-h-full max-w-full rounded-lg shadow-2xl"
+                  />
+                ) : (
+                  <img
+                    src={mediaAttachments[previewIndex].contentUrl + (mediaAttachments[previewIndex].contentUrl.includes("?") ? "&" : "?") + "key=" + apiKey}
+                    alt={mediaAttachments[previewIndex].filename}
+                    className="max-h-full max-w-full rounded-lg object-contain animate-in fade-in zoom-in-95 duration-200 shadow-2xl"
+                  />
+                )
+              )}
+              
+              {/* 底部信息栏 */}
+              {previewIndex !== null && mediaAttachments[previewIndex] && (
+                <div className="absolute bottom-[-60px] flex items-center gap-4 rounded-full bg-black/40 px-6 py-2 text-white backdrop-blur shadow-xl border border-white/10">
+                  <span className="text-sm font-medium">{mediaAttachments[previewIndex].filename}</span>
+                  <div className="h-4 w-px bg-white/20"></div>
+                  <span className="text-xs opacity-70">
+                    {previewIndex + 1} / {mediaAttachments.length}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 关闭按钮提示 */}
+            <div className="absolute top-8 right-8 text-white/50 text-xs flex items-center gap-2">
+              <span className="rounded border border-white/20 px-1.5 py-0.5">ESC</span>
+              关闭预览
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
