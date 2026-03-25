@@ -6,6 +6,7 @@ import {
   GetIssueStatuses,
   GetMyIssues,
   GetProjectMembers,
+  GetProjectVersions,
   UpdateIssue,
   UpdateIssueStatus,
 } from "../../wailsjs/go/main/App";
@@ -18,6 +19,10 @@ export interface RedmineCredentials {
 
 export interface GetMyIssuesOptions {
   statusId?: string;
+  assigneeId?: string;
+  authorId?: string;
+  versionId?: string;
+  projectId?: string;
   limit?: number;
   offset?: number;
 }
@@ -77,10 +82,24 @@ export async function getMyIssues(
   options: GetMyIssuesOptions = {}
 ): Promise<main.RedmineIssueList> {
   const { baseUrl, apiKey } = normalizeCredentials(credentials);
-  const statusId = (options.statusId ?? "*").trim() || "*";
+  const filter = new main.RedmineIssueFilter({
+    statusId: options.statusId || "",
+    assigneeId: options.assigneeId || "",
+    authorId: options.authorId || "",
+    fixedVersionId: options.versionId || "",
+    projectId: options.projectId || "",
+  });
   const limit = options.limit ?? 50;
   const offset = options.offset ?? 0;
-  return GetMyIssues(baseUrl, apiKey, statusId, limit, offset);
+  return GetMyIssues(baseUrl, apiKey, filter, limit, offset);
+}
+
+export async function getProjectVersions(
+  credentials: RedmineCredentials,
+  projectId: number
+): Promise<main.RedmineSelectOption[]> {
+  const { baseUrl, apiKey } = normalizeCredentials(credentials);
+  return GetProjectVersions(baseUrl, apiKey, projectId);
 }
 
 export async function getIssueDetail(
