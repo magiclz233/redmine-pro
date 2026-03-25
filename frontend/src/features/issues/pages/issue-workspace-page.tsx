@@ -31,10 +31,18 @@ export function IssueWorkspacePage() {
         totalCount={workspace.issuesQuery.data?.totalCount ?? 0}
         issues={workspace.issues}
         statusFilter={workspace.statusFilter}
+        assigneeFilter={workspace.assigneeFilter}
+        authorFilter={workspace.authorFilter}
+        versionFilter={workspace.versionFilter}
+        projectFilter={workspace.projectFilter}
         statuses={workspace.statusListQuery.data ?? []}
         selectedIssueId={workspace.selectedIssueId}
         isFetching={workspace.issuesQuery.isFetching}
         onStatusFilterChange={workspace.onStatusFilterChange}
+        onAssigneeFilterChange={workspace.setAssigneeFilter}
+        onAuthorFilterChange={workspace.setAuthorFilter}
+        onVersionFilterChange={workspace.setVersionFilter}
+        onProjectFilterChange={workspace.setProjectFilter}
         onIssueSelect={(issueId) => {
           workspace.setSelectedIssueId(issueId);
           workspace.setActionMessage("");
@@ -50,6 +58,11 @@ export function IssueWorkspacePage() {
         isDetailFetching={workspace.issueDetailQuery.isFetching}
         isEditMetaFetching={workspace.issueEditMetaQuery.isFetching}
         isSavePending={workspace.saveIssueMutation.isPending}
+        previewIndex={workspace.previewIndex}
+        mediaAttachments={workspace.mediaAttachments}
+        onPreviewIndexChange={workspace.setPreviewIndex}
+        onNextMedia={workspace.onNextMedia}
+        onPrevMedia={workspace.onPrevMedia}
         onEditFieldChange={workspace.onEditFieldChange}
         onCustomFieldValueChange={workspace.onCustomFieldValueChange}
         onCustomFieldValuesChange={workspace.onCustomFieldValuesChange}
