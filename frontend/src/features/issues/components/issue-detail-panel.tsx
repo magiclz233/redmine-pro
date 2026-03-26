@@ -121,6 +121,89 @@ function DescriptionRenderer({ text, apiKey }: { text: string; apiKey: string })
   );
 }
 
+function MediaGridItem({
+  file,
+  apiKey,
+  onClick,
+  onUnpreviewable,
+}: {
+  file: main.RedmineAttachment;
+  apiKey: string;
+  onClick: () => void;
+  onUnpreviewable?: (id: number) => void;
+}) {
+  const isVideo = file.contentType?.startsWith("video/");
+  const getUrl = (url: string) => `${url}${url.includes("?") ? "&" : "?"}key=${apiKey}`;
+  const formatSize = (bytes: number) => {
+    if (bytes === 0) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+
+  const handleVideoLoaded = (e: SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget;
+    if (v.videoWidth === 0 || v.videoHeight === 0) {
+      onUnpreviewable?.(file.id);
+    }
+  };
+
+  const handleVideoError = () => {
+    onUnpreviewable?.(file.id);
+  };
+
+  return (
+    <div
+      onClick={onClick}
+      className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-outline-variant/10 bg-surface-container-high/20 shadow-sm transition-all hover:border-primary/20"
+    >
+      <div className="aspect-video overflow-hidden bg-black/5 sm:aspect-square">
+        {isVideo ? (
+          <div className="relative h-full w-full">
+            <video
+              src={getUrl(file.contentUrl) + "#t=0.1"}
+              className="h-full w-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105"
+              preload="metadata"
+              onLoadedMetadata={handleVideoLoaded}
+              onError={handleVideoError}
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/0">
+              <div className="rounded-full bg-white/20 p-2 backdrop-blur-md">
+                <MaterialSymbol name="play_arrow" className="text-xl text-white" filled />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <img
+            src={getUrl(file.contentUrl)}
+            alt={file.filename}
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
+        )}
+      </div>
+
+      <div className="absolute inset-x-0 bottom-0 translate-y-1 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-3 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="flex items-end justify-between gap-2" onClick={(e) => e.stopPropagation()}>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[10px] font-bold text-white">{file.filename}</p>
+            <p className="mt-0.5 text-[10px] text-white/60">{formatSize(file.filesize)}</p>
+          </div>
+          <a
+            href={getUrl(file.contentUrl)}
+            target="_blank"
+            rel="noreferrer"
+            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black"
+          >
+            <MaterialSymbol name="download" opticalSize={20} />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AttachmentSection({
   attachments,
   mediaAttachments,
@@ -132,6 +215,8 @@ function AttachmentSection({
   apiKey: string;
   onPreviewIndexChange: (index: number) => void;
 }) {
+  const [unpreviewableVideoIds, setUnpreviewableVideoIds] = useState<Set<number>>(new Set());
+
   if (!attachments || attachments.length === 0) return null;
 
   const formatSize = (bytes: number) => {
@@ -144,9 +229,29 @@ function AttachmentSection({
 
   const getUrl = (url: string) => `${url}${url.includes("?") ? "&" : "?"}key=${apiKey}`;
 
+  const handleUnpreviewable = (id: number) => {
+    setUnpreviewableVideoIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  };
+
   const images = attachments.filter((f) => f.contentType?.startsWith("image/"));
   const videos = attachments.filter((f) => f.contentType?.startsWith("video/"));
-  const others = attachments.filter((f) => !f.contentType?.startsWith("image/") && !f.contentType?.startsWith("video/"));
+  
+  // 综合媒体库：包含图片和尚未判别为不可预览的视频
+  const mediaGallery = [...images, ...videos.filter((v) => !unpreviewableVideoIds.has(v.id))];
+
+  // 其他文件：包含常规文件，以及已被判定为不可预览的视频
+  const others = attachments.filter((f) => {
+    const isImage = f.contentType?.startsWith("image/");
+    const isVideo = f.contentType?.startsWith("video/");
+    if (isImage) return false;
+    if (isVideo) return unpreviewableVideoIds.has(f.id);
+    return true;
+  });
 
   return (
     <section className="space-y-12">
@@ -155,82 +260,24 @@ function AttachmentSection({
         <h3 className="text-sm font-bold uppercase tracking-widest text-on-surface">附件资源 ({attachments.length})</h3>
       </div>
 
-      {/* 图片墙 */}
-      {images.length > 0 && (
+      {/* 媒体展示网格：图片与视频混合展示 */}
+      {mediaGallery.length > 0 && (
         <div className="space-y-4">
           <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
-            <MaterialSymbol name="image" opticalSize={20} />
-            图片附件 ({images.length})
+            <MaterialSymbol name="gallery_thumbnail" opticalSize={20} />
+            媒体预览 ({mediaGallery.length})
           </h4>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((file) => {
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {mediaGallery.map((file) => {
               const mediaIndex = mediaAttachments.findIndex((ma) => ma.id === file.id);
               return (
-                <div
+                <MediaGridItem
                   key={file.id}
+                  file={file}
+                  apiKey={apiKey}
                   onClick={() => mediaIndex !== -1 && onPreviewIndexChange(mediaIndex)}
-                  className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-outline-variant/5 bg-surface-container-high/20 transition-all hover:border-primary/20"
-                >
-                  <div className="aspect-auto min-h-[120px] overflow-hidden">
-                    <img
-                      src={getUrl(file.contentUrl)}
-                      alt={file.filename}
-                      className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.02]"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 translate-y-2 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 opacity-0 transition-all group-hover:translate-y-0 group-hover:opacity-100">
-                    <div className="flex items-end justify-between gap-2" onClick={(e) => e.stopPropagation()}>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-bold text-white">{file.filename}</p>
-                        <p className="mt-1 text-[10px] text-white/60">{formatSize(file.filesize)}</p>
-                      </div>
-                      <a
-                        href={getUrl(file.contentUrl)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-white hover:text-black"
-                      >
-                        <MaterialSymbol name="download" opticalSize={20} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 视频列表 */}
-      {videos.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-on-surface-variant/50">
-            <MaterialSymbol name="movie" opticalSize={20} />
-            视频附件 ({videos.length})
-          </h4>
-          <div className="space-y-6">
-            {videos.map((file) => {
-              const mediaIndex = mediaAttachments.findIndex((ma) => ma.id === file.id);
-              return (
-                <div key={file.id} className="overflow-hidden rounded-2xl border border-outline-variant/10 bg-black/40 shadow-lg">
-                  <div className="flex items-center justify-between border-b border-white/5 bg-white/5 px-4 py-2">
-                    <span className="truncate text-xs font-medium text-white/80">{file.filename}</span>
-                    <span className="text-[10px] text-white/40">{formatSize(file.filesize)}</span>
-                  </div>
-                  <div className="relative aspect-video cursor-pointer" onClick={() => mediaIndex !== -1 && onPreviewIndexChange(mediaIndex)}>
-                    <video
-                      src={getUrl(file.contentUrl) + "#t=0.1"}
-                      className="w-full h-full object-contain opacity-80"
-                      preload="metadata"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 hover:bg-black/10 transition-colors">
-                      <div className="rounded-full bg-white/20 p-4 backdrop-blur-md">
-                        <MaterialSymbol name="play_arrow" className="text-3xl text-white" filled />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  onUnpreviewable={handleUnpreviewable}
+                />
               );
             })}
           </div>
@@ -251,21 +298,27 @@ function AttachmentSection({
                 className="flex items-center gap-3 rounded-xl border border-outline-variant/5 bg-surface-container-high/40 p-3 transition-colors hover:bg-surface-container-high/80"
               >
                 <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-surface-container-highest text-on-surface-variant">
-                  <MaterialSymbol name="description" opticalSize={24} />
+                  <MaterialSymbol
+                    name={file.contentType?.startsWith("video/") ? "movie" : "description"}
+                    opticalSize={24}
+                  />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-[13px] font-bold text-on-surface" title={file.filename}>
                     {file.filename}
+                    {file.contentType?.startsWith("video/") && (
+                      <span className="ml-2 inline-block rounded bg-red-500/10 px-1 text-[9px] font-normal text-red-400">
+                        无法预览
+                      </span>
+                    )}
                   </div>
-                  <div className="mt-0.5 text-[10px] text-on-surface-variant/60">
-                    {formatSize(file.filesize)}
-                  </div>
+                  <div className="mt-0.5 text-[10px] text-on-surface-variant/60">{formatSize(file.filesize)}</div>
                 </div>
                 <a
                   href={getUrl(file.contentUrl)}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex size-8 items-center justify-center rounded-full text-on-surface-variant hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="flex size-8 items-center justify-center rounded-full text-on-surface-variant transition-colors hover:bg-primary/10 hover:text-primary"
                 >
                   <MaterialSymbol name="download" opticalSize={20} />
                 </a>
@@ -1037,7 +1090,7 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
                   <span className="text-sm font-medium">{selectedMedia.filename}</span>
                   <div className="h-4 w-px bg-white/20"></div>
                   <span className="text-xs opacity-70">
-                    {previewIndex + 1} / {mediaAttachments.length}
+                    {(previewIndex ?? 0) + 1} / {mediaAttachments.length}
                   </span>
                 </div>
               )}
