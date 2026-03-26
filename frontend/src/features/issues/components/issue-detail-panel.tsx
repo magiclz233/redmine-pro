@@ -915,7 +915,10 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
 
       {/* 全屏画廊预览 */}
       <Dialog open={previewIndex !== null} onOpenChange={(open) => !open && onPreviewIndexChange(null)}>
-        <DialogContent className="max-w-none border-none bg-transparent p-0 shadow-none outline-none">
+        <DialogContent
+          showCloseButton={false}
+          className="inset-0 h-screen w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-none bg-transparent p-0 shadow-none ring-0 outline-none"
+        >
           <DialogTitle className="sr-only">媒体预览</DialogTitle>
           <div className="relative flex h-screen w-screen items-center justify-center bg-black/40 backdrop-blur-md">
             {/* 左右切换按钮 */}
