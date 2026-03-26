@@ -1,4 +1,4 @@
-import { useState, type ReactNode, useMemo, useEffect } from "react";
+import { useState, type ReactNode, type SyntheticEvent, useMemo, useEffect } from "react";
 import { MaterialSymbol } from "@/components/material-symbol";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -515,7 +515,7 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
     setPreviewVideoState("idle");
   }, [selectedMedia?.id, selectedMedia?.contentType]);
 
-  const handlePreviewVideoLoadedMetadata = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+  const handlePreviewVideoLoadedMetadata = (event: SyntheticEvent<HTMLVideoElement>) => {
     const video = event.currentTarget;
     /**
      * Wails 内嵌 WebView 对视频编解码的支持受系统环境影响。
