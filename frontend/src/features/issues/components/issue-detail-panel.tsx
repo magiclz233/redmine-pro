@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAppStore } from "@/stores/use-app-store";
 import type { main } from "../../../../wailsjs/go/models";
 
+type PreviewVideoState = "idle" | "ready" | "unsupported" | "error";
+
 interface IssueEditFormState {
   subject: string;
   description: string;
@@ -482,6 +484,7 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
   } = props;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [previewVideoState, setPreviewVideoState] = useState<PreviewVideoState>("idle");
   
   // 键盘快捷键支持画廊切换
   useEffect(() => {
@@ -499,6 +502,35 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
   }, [previewIndex, onNextMedia, onPrevMedia, onPreviewIndexChange]);
 
   const apiKey = useAppStore((state) => state.apiKey);
+  const selectedMedia = previewIndex !== null ? mediaAttachments[previewIndex] : null;
+  const selectedMediaUrl = selectedMedia
+    ? `${selectedMedia.contentUrl}${selectedMedia.contentUrl.includes("?") ? "&" : "?"}key=${apiKey}`
+    : "";
+
+  useEffect(() => {
+    if (!selectedMedia?.contentType?.startsWith("video/")) {
+      setPreviewVideoState("idle");
+      return;
+    }
+    setPreviewVideoState("idle");
+  }, [selectedMedia?.id, selectedMedia?.contentType]);
+
+  const handlePreviewVideoLoadedMetadata = (event: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = event.currentTarget;
+    /**
+     * Wails 内嵌 WebView 对视频编解码的支持受系统环境影响。
+     * 某些 MP4 会出现“能播放音频但拿不到视频轨尺寸”的情况，此时直接降级为下载。
+     */
+    if (video.videoWidth > 0 && video.videoHeight > 0) {
+      setPreviewVideoState("ready");
+      return;
+    }
+    setPreviewVideoState("unsupported");
+  };
+
+  const handlePreviewVideoError = () => {
+    setPreviewVideoState("error");
+  };
 
   if (!selectedIssueId) {
     return (
@@ -920,7 +952,10 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
           className="inset-0 h-screen w-screen max-w-none translate-x-0 translate-y-0 rounded-none border-none bg-transparent p-0 shadow-none ring-0 outline-none"
         >
           <DialogTitle className="sr-only">媒体预览</DialogTitle>
-          <div className="relative flex h-screen w-screen items-center justify-center bg-black/40 backdrop-blur-md">
+          <div
+            className="relative flex h-screen w-screen items-center justify-center bg-black/40 backdrop-blur-md"
+            onClick={() => onPreviewIndexChange(null)}
+          >
             {/* 左右切换按钮 */}
             {mediaAttachments.length > 1 && (
               <>
@@ -940,28 +975,66 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
             )}
 
             {/* 内容预览 */}
-            <div className="relative flex max-h-[90vh] max-w-[95vw] items-center justify-center p-4">
-              {previewIndex !== null && mediaAttachments[previewIndex] && (
-                mediaAttachments[previewIndex].contentType?.startsWith("video/") ? (
-                  <video 
-                    src={mediaAttachments[previewIndex].contentUrl + (mediaAttachments[previewIndex].contentUrl.includes("?") ? "&" : "?") + "key=" + apiKey}
-                    controls
-                    autoPlay
-                    className="max-h-full max-w-full rounded-lg shadow-2xl"
-                  />
+            <div
+              className="relative flex max-h-[90vh] max-w-[95vw] items-center justify-center p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {selectedMedia && (
+                selectedMedia.contentType?.startsWith("video/") ? (
+                  previewVideoState === "unsupported" || previewVideoState === "error" ? (
+                    <div className="flex w-[min(92vw,560px)] flex-col items-center gap-5 rounded-2xl border border-white/10 bg-black/50 px-8 py-10 text-center text-white shadow-2xl backdrop-blur-md">
+                      <div className="flex size-16 items-center justify-center rounded-full bg-white/10">
+                        <MaterialSymbol name="download" opticalSize={24} className="text-3xl" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-base font-semibold text-white">当前环境暂时无法预览这个视频</h3>
+                        <p className="text-sm leading-6 text-white/70">
+                          该附件可能使用了当前 WebView 不兼容的视频编码。已自动切换为下载查看。
+                        </p>
+                      </div>
+                      <a
+                        href={selectedMediaUrl}
+                        download={selectedMedia.filename}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm shadow-black/20 transition-opacity hover:opacity-90"
+                      >
+                        <MaterialSymbol name="download" opticalSize={20} />
+                        下载视频附件
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="relative flex items-center justify-center">
+                      {previewVideoState === "idle" ? (
+                        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-black/35 backdrop-blur-sm">
+                          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/45 px-4 py-2 text-sm text-white/80">
+                            <MaterialSymbol name="progress_activity" opticalSize={20} className="animate-spin" />
+                            正在检测视频兼容性...
+                          </div>
+                        </div>
+                      ) : null}
+                      <video
+                        src={selectedMediaUrl}
+                        controls
+                        autoPlay
+                        preload="metadata"
+                        onLoadedMetadata={handlePreviewVideoLoadedMetadata}
+                        onError={handlePreviewVideoError}
+                        className="max-h-full max-w-full rounded-lg shadow-2xl"
+                      />
+                    </div>
+                  )
                 ) : (
                   <img
-                    src={mediaAttachments[previewIndex].contentUrl + (mediaAttachments[previewIndex].contentUrl.includes("?") ? "&" : "?") + "key=" + apiKey}
-                    alt={mediaAttachments[previewIndex].filename}
+                    src={selectedMediaUrl}
+                    alt={selectedMedia.filename}
                     className="max-h-full max-w-full rounded-lg object-contain animate-in fade-in zoom-in-95 duration-200 shadow-2xl"
                   />
                 )
               )}
               
               {/* 底部信息栏 */}
-              {previewIndex !== null && mediaAttachments[previewIndex] && (
+              {selectedMedia && (
                 <div className="absolute bottom-[-60px] flex items-center gap-4 rounded-full bg-black/40 px-6 py-2 text-white backdrop-blur shadow-xl border border-white/10">
-                  <span className="text-sm font-medium">{mediaAttachments[previewIndex].filename}</span>
+                  <span className="text-sm font-medium">{selectedMedia.filename}</span>
                   <div className="h-4 w-px bg-white/20"></div>
                   <span className="text-xs opacity-70">
                     {previewIndex + 1} / {mediaAttachments.length}
@@ -970,10 +1043,18 @@ export function IssueDetailPanel(props: IssueDetailPanelProps) {
               )}
             </div>
 
-            {/* 关闭按钮提示 */}
-            <div className="absolute top-8 right-8 text-white/50 text-xs flex items-center gap-2">
-              <span className="rounded border border-white/20 px-1.5 py-0.5">ESC</span>
-              关闭预览
+            {/* 右上角关闭入口 */}
+            <div className="absolute right-8 top-8">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => onPreviewIndexChange(null)}
+                className="h-10 w-10 rounded-full border border-white/10 bg-black/20 text-white backdrop-blur transition-colors hover:bg-black/40 hover:text-white"
+                aria-label="关闭预览"
+              >
+                <MaterialSymbol name="close" opticalSize={20} />
+              </Button>
             </div>
           </div>
         </DialogContent>
